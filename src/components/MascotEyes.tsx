@@ -105,7 +105,7 @@ export function MascotEyes({ mousePosition }: MascotEyesProps) {
       </group>
 
       {/* Smile */}
-      <mesh position={[0, -0.1, 0.95]} rotation={[0, 0, 0]}>
+      <mesh position={[0, -0.1, 1.15]} rotation={[Math.PI, 0, 0]}>
         <torusGeometry args={[0.25, 0.04, 16, 32, Math.PI]} />
         <meshStandardMaterial 
           color="#ff6b9d"

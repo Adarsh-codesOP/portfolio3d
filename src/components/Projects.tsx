@@ -78,9 +78,8 @@ export function Projects() {
       offset: ['start end', 'end start'],
     });
 
-    const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
-    const rotateX = useTransform(scrollYProgress, [0, 0.5, 1], [5, 0, -5]);
-    const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.95]);
+    const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
+    const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.7, 1, 1, 0.7]);
 
     return (
       <motion.div
@@ -88,7 +87,12 @@ export function Projects() {
         variants={itemVariants}
         onHoverStart={() => setHoveredIndex(index)}
         onHoverEnd={() => setHoveredIndex(null)}
-        style={{ y, rotateX, scale }}
+        style={{ 
+          y, 
+          opacity,
+          willChange: 'transform, opacity'
+        }}
+        className="will-change-transform"
       >
         <Card className="glass group hover:glow-primary transition-all duration-500 overflow-hidden">
           <div className="grid md:grid-cols-3 gap-6 p-6">
