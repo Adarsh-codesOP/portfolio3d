@@ -1,8 +1,10 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "portfolio3d",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "author": "Adarsh A S",
+  "description": "Portfolio website showcasing projects in AI, blockchain, and full-stack development",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
