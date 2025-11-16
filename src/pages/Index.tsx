@@ -14,8 +14,10 @@ import { useMascotScrollTrigger, MascotPosition } from '@/hooks/useScrollTrigger
 import { GridScan } from '@/components/GridScan';
 import Dock from '@/components/Dock';
 import { Home, User, Briefcase, FileText, Mail, Github, Linkedin } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
+  const isMobile = useIsMobile();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [mascotPosition, setMascotPosition] = useState<MascotPosition & { section?: string }>({
     position: [2.5, 0, 0],
@@ -24,8 +26,10 @@ const Index = () => {
     section: 'hero',
   });
 
-  // Track mouse for eye movement
+  // Track mouse for eye movement (only on desktop)
   useEffect(() => {
+    if (isMobile) return;
+    
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -34,12 +38,14 @@ const Index = () => {
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [isMobile]);
 
-  // GSAP ScrollTrigger for mascot positions
+  // GSAP ScrollTrigger for mascot positions (only on desktop)
   const handlePositionChange = useCallback((position: MascotPosition & { section?: string }) => {
-    setMascotPosition(position);
-  }, []);
+    if (!isMobile) {
+      setMascotPosition(position);
+    }
+  }, [isMobile]);
 
   useMascotScrollTrigger(handlePositionChange);
 
@@ -84,55 +90,61 @@ const Index = () => {
   return (
     <SmoothScroll>
       <div className="min-h-screen bg-background text-foreground relative">
-        {/* GridScan Background */}
-        <div className="fixed inset-0 z-0">
-          <GridScan
-            sensitivity={0.55}
-            lineThickness={1}
-            linesColor="#392e4e"
-            gridScale={0.1}
-            scanColor="#FF9FFC"
-            scanOpacity={0.4}
-            enablePost
-            bloomIntensity={0.6}
-            chromaticAberration={0.002}
-            noiseIntensity={0.01}
-          />
-        </div>
+        {/* GridScan Background - Desktop only */}
+        {!isMobile ? (
+          <div className="fixed inset-0 z-0">
+            <GridScan
+              sensitivity={0.55}
+              lineThickness={1}
+              linesColor="#392e4e"
+              gridScale={0.1}
+              scanColor="#FF9FFC"
+              scanOpacity={0.4}
+              enablePost
+              bloomIntensity={0.6}
+              chromaticAberration={0.002}
+              noiseIntensity={0.01}
+            />
+          </div>
+        ) : (
+          <div className="fixed inset-0 z-0 bg-gradient-to-b from-background via-background/95 to-background" />
+        )}
 
-        {/* Fixed 3D Canvas with Mascot - Above background, below content */}
-        <div className="fixed inset-0 z-30 pointer-events-none">
-          <Canvas shadows>
-            <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
-            
-            {/* Lighting */}
-            <ambientLight intensity={0.4} />
-            <directionalLight 
-              position={[5, 5, 5]} 
-              intensity={1} 
-              castShadow
-              shadow-mapSize-width={2048}
-              shadow-mapSize-height={2048}
-            />
-            <spotLight
-              position={[0, 10, 0]}
-              angle={0.3}
-              penumbra={1}
-              intensity={0.5}
-              castShadow
-            />
-            
-            {/* Environment for reflections */}
-            <Environment preset="city" />
-            
-            {/* Mascot */}
-            <Mascot3D 
-              targetPosition={mascotPosition}
-              mousePosition={mousePosition}
-              currentSection={mascotPosition.section}
-            />
-          </Canvas>
-        </div>
+        {/* Fixed 3D Canvas with Mascot - Desktop only */}
+        {!isMobile && (
+          <div className="fixed inset-0 z-30 pointer-events-none">
+            <Canvas shadows>
+              <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
+              
+              {/* Lighting */}
+              <ambientLight intensity={0.4} />
+              <directionalLight 
+                position={[5, 5, 5]} 
+                intensity={1} 
+                castShadow
+                shadow-mapSize-width={2048}
+                shadow-mapSize-height={2048}
+              />
+              <spotLight
+                position={[0, 10, 0]}
+                angle={0.3}
+                penumbra={1}
+                intensity={0.5}
+                castShadow
+              />
+              
+              {/* Environment for reflections */}
+              <Environment preset="city" />
+              
+              {/* Mascot */}
+              <Mascot3D 
+                targetPosition={mascotPosition}
+                mousePosition={mousePosition}
+                currentSection={mascotPosition.section}
+              />
+            </Canvas>
+          </div>
+        )}
 
         {/* Content */}
         <div className="relative z-40">
@@ -150,9 +162,9 @@ const Index = () => {
           <div className="pointer-events-auto">
             <Dock 
               items={dockItems}
-              panelHeight={68}
-              baseItemSize={50}
-              magnification={70}
+              panelHeight={isMobile ? 60 : 68}
+              baseItemSize={isMobile ? 44 : 50}
+              magnification={isMobile ? 60 : 70}
             />
           </div>
         </div>

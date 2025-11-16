@@ -2,17 +2,19 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Github, Linkedin, Mail } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export function Hero() {
+  const isMobile = useIsMobile();
   const containerRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
   });
 
-  // Parallax transforms
-  const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
-  const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0]);
+  // Parallax transforms - disabled on mobile
+  const contentY = useTransform(scrollYProgress, [0, 1], isMobile ? ['0%', '0%'] : ['0%', '30%']);
+  const opacity = useTransform(scrollYProgress, [0, 0.5, 1], isMobile ? [1, 1, 1] : [1, 0.8, 0]);
 
   const containerVariants = {
     hidden: { opacity: 0 },

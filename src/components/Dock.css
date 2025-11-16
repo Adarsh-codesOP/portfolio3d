@@ -13,13 +13,30 @@
   display: flex;
   align-items: flex-end;
   width: fit-content;
-  gap: 1rem;
+  max-width: calc(100vw - 1rem);
+  gap: 0.5rem;
   border-radius: 1rem;
   background-color: rgba(6, 0, 16, 0.8);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(34, 34, 34, 0.8);
   padding: 0 0.5rem 0.5rem;
   z-index: 1000;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dock-panel::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .dock-panel {
+    gap: 0.4rem;
+    padding: 0 0.4rem 0.4rem;
+    bottom: 0.4rem;
+  }
 }
 
 .dock-item {

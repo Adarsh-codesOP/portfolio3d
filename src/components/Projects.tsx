@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Github } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const projects = [
   {
@@ -72,14 +73,15 @@ export function Projects() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: number }) => {
+    const isMobile = useIsMobile();
     const cardRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
       target: cardRef,
       offset: ['start end', 'end start'],
     });
 
-    const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
-    const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0.7, 1, 1, 0.7]);
+    const y = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [50, -50]);
+    const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], isMobile ? [1, 1, 1, 1] : [0.7, 1, 1, 0.7]);
 
     return (
       <motion.div
