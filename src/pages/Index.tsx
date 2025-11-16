@@ -90,9 +90,22 @@ const Index = () => {
   return (
     <SmoothScroll>
       <div className="min-h-screen bg-background text-foreground relative">
-        {/* GridScan Background - Desktop only */}
-        {!isMobile ? (
-          <div className="fixed inset-0 z-0">
+        {/* GridScan Background - Optimized for mobile */}
+        <div className="fixed inset-0 z-0">
+          {isMobile ? (
+            <GridScan
+              sensitivity={0.3}
+              lineThickness={0.8}
+              linesColor="#392e4e"
+              gridScale={0.15}
+              scanColor="#FF9FFC"
+              scanOpacity={0.3}
+              enablePost={false}
+              bloomIntensity={0}
+              chromaticAberration={0}
+              noiseIntensity={0.005}
+            />
+          ) : (
             <GridScan
               sensitivity={0.55}
               lineThickness={1}
@@ -105,10 +118,8 @@ const Index = () => {
               chromaticAberration={0.002}
               noiseIntensity={0.01}
             />
-          </div>
-        ) : (
-          <div className="fixed inset-0 z-0 bg-gradient-to-b from-background via-background/95 to-background" />
-        )}
+          )}
+        </div>
 
         {/* Fixed 3D Canvas with Mascot - Desktop only */}
         {!isMobile && (
