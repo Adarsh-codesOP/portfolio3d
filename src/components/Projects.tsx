@@ -1,10 +1,9 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Github } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 const projects = [
   {
@@ -67,34 +66,28 @@ const itemVariants = {
   },
 };
 
+// Prevent re-animation by locking the state
+const lockedVariants = {
+  hidden: { opacity: 1, y: 0 },
+  visible: { opacity: 1, y: 0 },
+};
+
 export function Projects() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.1 });
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [animationLocked, setAnimationLocked] = useState(false);
+  
+  // Lock animation state once it's been triggered
+  useEffect(() => {
+    if (isInView && !animationLocked) {
+      setAnimationLocked(true);
+    }
+  }, [isInView, animationLocked]);
 
   const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: number }) => {
-    const isMobile = useIsMobile();
-    const cardRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-      target: cardRef,
-      offset: ['start end', 'end start'],
-    });
-
-    const y = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [50, -50]);
-    const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], isMobile ? [1, 1, 1, 1] : [0.7, 1, 1, 0.7]);
-
     return (
       <motion.div
-        ref={cardRef}
-        variants={itemVariants}
-        onHoverStart={() => setHoveredIndex(index)}
-        onHoverEnd={() => setHoveredIndex(null)}
-        style={{ 
-          y, 
-          opacity,
-          willChange: 'transform, opacity'
-        }}
-        className="will-change-transform"
+        variants={animationLocked ? lockedVariants : itemVariants}
       >
         <Card className="glass group hover:glow-primary transition-all duration-500 overflow-hidden">
           <div className="grid md:grid-cols-3 gap-6 p-6">
@@ -103,10 +96,10 @@ export function Projects() {
               <CardHeader className="p-0 mb-4">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <CardTitle className="text-3xl font-black mb-2">
+                    <CardTitle className="text-3xl font-display font-bold mb-2">
                       {project.title}
                     </CardTitle>
-                    <CardDescription className="text-lg text-primary">
+                    <CardDescription className="text-lg text-primary font-sans">
                       {project.subtitle} • {project.year}
                     </CardDescription>
                   </div>
@@ -179,11 +172,11 @@ export function Projects() {
         <motion.div
           variants={containerVariants}
           initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
+          animate={animationLocked ? 'visible' : (isInView ? 'visible' : 'hidden')}
         >
           <motion.h2 
             variants={itemVariants}
-            className="text-5xl md:text-6xl font-black mb-16 text-gradient"
+            className="text-5xl md:text-6xl font-display font-bold mb-16 text-gradient tracking-tight"
           >
             Featured Projects
           </motion.h2>

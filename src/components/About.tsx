@@ -76,7 +76,7 @@ export function About() {
         >
           <motion.h2 
             variants={itemVariants}
-            className="text-5xl md:text-6xl font-black mb-16 text-gradient"
+            className="text-5xl md:text-6xl font-display font-bold mb-16 text-gradient tracking-tight"
           >
             About Me
           </motion.h2>
@@ -86,7 +86,7 @@ export function About() {
             <motion.div variants={itemVariants}>
               <Card className="glass h-full">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-3 text-2xl">
+                  <CardTitle className="flex items-center gap-3">
                     <GraduationCap className="w-7 h-7 text-primary" />
                     Education
                   </CardTitle>
@@ -94,8 +94,8 @@ export function About() {
                 <CardContent className="space-y-6">
                   {education.map((edu, index) => (
                     <div key={index} className="border-l-2 border-primary/30 pl-4">
-                      <h3 className="font-bold text-lg">{edu.degree}</h3>
-                      <p className="text-muted-foreground">{edu.institution}</p>
+                      <h3 className="font-display font-semibold text-lg">{edu.degree}</h3>
+                      <p className="text-muted-foreground font-sans">{edu.institution}</p>
                       <div className="flex justify-between text-sm mt-1">
                         <span className="text-primary">{edu.period}</span>
                         <span className="font-semibold">{edu.grade}</span>

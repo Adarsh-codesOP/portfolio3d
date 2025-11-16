@@ -38,7 +38,7 @@ export function Publications() {
         >
           <motion.h2 
             variants={itemVariants}
-            className="text-5xl md:text-6xl font-black mb-16 text-gradient"
+            className="text-5xl md:text-6xl font-display font-bold mb-16 text-gradient tracking-tight"
           >
             Publications
           </motion.h2>
@@ -82,7 +82,7 @@ export function Publications() {
               <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-secondary opacity-20 blur-3xl" />
               <Card className="glass relative border-2 border-primary/50">
                 <CardContent className="p-8 text-center">
-                  <h3 className="text-3xl font-black mb-4 text-gradient">
+                  <h3 className="text-3xl font-display font-bold mb-4 text-gradient">
                     Let's Build Something Amazing
                   </h3>
                   <p className="text-muted-foreground mb-6 leading-relaxed">

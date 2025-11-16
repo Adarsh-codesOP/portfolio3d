@@ -78,7 +78,7 @@ export function Highlights() {
         >
           <motion.h2 
             variants={itemVariants}
-            className="text-5xl md:text-6xl font-black mb-16 text-gradient"
+            className="text-5xl md:text-6xl font-display font-bold mb-16 text-gradient tracking-tight"
           >
             Highlights
           </motion.h2>
@@ -121,7 +121,7 @@ export function Highlights() {
                 <CardContent className="space-y-4">
                   {achievements.map((achievement, index) => (
                     <div key={index} className="p-4 bg-background/40 rounded-lg border border-accent/30">
-                      <h3 className="font-bold text-lg mb-2 text-accent">{achievement.title}</h3>
+                      <h3 className="font-display font-semibold text-lg mb-2 text-accent">{achievement.title}</h3>
                       <p className="text-sm text-muted-foreground mb-1">{achievement.description}</p>
                       <p className="text-sm">{achievement.project}</p>
                     </div>
@@ -144,7 +144,7 @@ export function Highlights() {
                 <div className="grid md:grid-cols-3 gap-6">
                   {leadership.map((item, index) => (
                     <div key={index} className="p-4 glass rounded-lg">
-                      <h3 className="font-bold text-lg mb-2">{item.role}</h3>
+                      <h3 className="font-display font-semibold text-lg mb-2">{item.role}</h3>
                       <p className="text-sm text-muted-foreground">{item.description}</p>
                     </div>
                   ))}

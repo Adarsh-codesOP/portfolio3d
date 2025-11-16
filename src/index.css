@@ -38,10 +38,10 @@ All colors MUST be HSL.
 
     --radius: 1rem;
     
-    /* Gradient stops */
-    --gradient-from: 263 70% 50%;
-    --gradient-via: 280 80% 60%;
-    --gradient-to: 217 91% 60%;
+    /* Gradient stops - Cyan to Blue */
+    --gradient-from: 195 100% 75%; /* #4CC9F0 */
+    --gradient-via: 212 88% 67%; /* Midpoint */
+    --gradient-to: 230 75% 60%; /* #4361EE */
     
     /* Glass effect */
     --glass-bg: 240 10% 8%;
@@ -98,6 +98,25 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+
+  h1 {
+    @apply font-bold tracking-tight;
+    letter-spacing: -0.02em;
+  }
+
+  h2 {
+    @apply font-bold tracking-tight;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    @apply font-sans;
   }
 }
