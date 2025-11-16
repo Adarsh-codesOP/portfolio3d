@@ -20,7 +20,7 @@ const Preloader = () => {
         // Remove from DOM after fade animation
         setTimeout(() => {
           setIsLoading(false);
-        }, 500); // Match CSS transition duration (0.8s)
+        }, 500); // Match CSS transition duration 
       }, remainingTime);
     };
 
