@@ -7,13 +7,28 @@ import { MascotPosition } from '@/hooks/useScrollTrigger';
 interface Mascot3DProps {
   targetPosition: MascotPosition;
   mousePosition: { x: number; y: number };
+  currentSection?: string;
 }
 
-export function Mascot3D({ targetPosition, mousePosition }: Mascot3DProps) {
+export function Mascot3D({ targetPosition, mousePosition, currentSection = 'hero' }: Mascot3DProps) {
   const groupRef = useRef<THREE.Group>(null);
   const bodyRef = useRef<THREE.Mesh>(null);
   const floatOffset = useRef(0);
   const glowRef = useRef<THREE.PointLight>(null);
+  const materialRef = useRef<THREE.MeshPhysicalMaterial>(null);
+
+  // Color schemes for different sections
+  const sectionColors = useMemo(() => {
+    const colors: Record<string, { main: string; accent: string; glow: string }> = {
+      hero: { main: '#a855f7', accent: '#ec4899', glow: '#a855f7' },
+      about: { main: '#3b82f6', accent: '#60a5fa', glow: '#3b82f6' },
+      skills: { main: '#10b981', accent: '#34d399', glow: '#10b981' },
+      highlights: { main: '#f59e0b', accent: '#fbbf24', glow: '#f59e0b' },
+      projects: { main: '#ef4444', accent: '#f87171', glow: '#ef4444' },
+      publications: { main: '#8b5cf6', accent: '#a78bfa', glow: '#8b5cf6' },
+    };
+    return colors[currentSection] || colors.hero;
+  }, [currentSection]);
 
   // Create smooth blob geometry
   const geometry = useMemo(() => {
@@ -90,14 +105,26 @@ export function Mascot3D({ targetPosition, mousePosition }: Mascot3DProps) {
       THREE.MathUtils.lerp(groupRef.current.scale.x, targetScale, 0.05)
     );
 
-    // Animate glow intensity
+    // Animate glow intensity with section-specific variation
     if (glowRef.current) {
-      glowRef.current.intensity = 3 + Math.sin(state.clock.elapsedTime * 2) * 0.5;
+      const baseIntensity = currentSection === 'projects' ? 4 : currentSection === 'highlights' ? 3.5 : 3;
+      glowRef.current.intensity = baseIntensity + Math.sin(state.clock.elapsedTime * 2) * 0.5;
+      glowRef.current.color.set(sectionColors.glow);
     }
 
-    // Subtle body rotation for liveliness
+    // Update material colors smoothly
+    if (materialRef.current) {
+      const targetColor = new THREE.Color(sectionColors.main);
+      const currentColor = materialRef.current.color;
+      materialRef.current.color.lerp(targetColor, 0.05);
+    }
+
+    // Section-specific animations
     if (bodyRef.current) {
-      bodyRef.current.rotation.y += 0.002;
+      let rotationSpeed = 0.002;
+      if (currentSection === 'skills') rotationSpeed = 0.004; // Faster for skills
+      if (currentSection === 'projects') rotationSpeed = 0.001; // Slower for projects
+      bodyRef.current.rotation.y += rotationSpeed;
     }
   });
 
@@ -106,15 +133,16 @@ export function Mascot3D({ targetPosition, mousePosition }: Mascot3DProps) {
       {/* Main Body */}
       <mesh ref={bodyRef} geometry={geometry} castShadow receiveShadow>
         <meshPhysicalMaterial
-          color="#a855f7"
-          metalness={0.6}
-          roughness={0.2}
+          ref={materialRef}
+          color={sectionColors.main}
+          metalness={currentSection === 'projects' ? 0.8 : 0.6}
+          roughness={currentSection === 'highlights' ? 0.1 : 0.2}
           clearcoat={1}
           clearcoatRoughness={0.1}
-          transmission={0.3}
+          transmission={currentSection === 'about' ? 0.4 : 0.3}
           thickness={0.8}
           ior={1.5}
-          envMapIntensity={1.5}
+          envMapIntensity={currentSection === 'skills' ? 2 : 1.5}
         />
       </mesh>
 
@@ -125,9 +153,9 @@ export function Mascot3D({ targetPosition, mousePosition }: Mascot3DProps) {
       <mesh scale={0.6}>
         <sphereGeometry args={[1, 32, 32]} />
         <meshBasicMaterial 
-          color="#ec4899" 
+          color={sectionColors.accent} 
           transparent 
-          opacity={0.1}
+          opacity={currentSection === 'highlights' ? 0.15 : 0.1}
         />
       </mesh>
 
@@ -136,17 +164,17 @@ export function Mascot3D({ targetPosition, mousePosition }: Mascot3DProps) {
         ref={glowRef}
         position={[0, 0, 0]} 
         intensity={3} 
-        color="#a855f7" 
+        color={sectionColors.glow} 
         distance={5}
       />
-      <pointLight position={[2, 2, 2]} intensity={2} color="#3b82f6" />
-      <pointLight position={[-2, -1, -1]} intensity={1.5} color="#ec4899" />
+      <pointLight position={[2, 2, 2]} intensity={2} color={sectionColors.accent} />
+      <pointLight position={[-2, -1, -1]} intensity={1.5} color={sectionColors.main} />
       
       {/* Rim light */}
-      <pointLight position={[0, 0, -2]} intensity={2} color="#8b5cf6" />
+      <pointLight position={[0, 0, -2]} intensity={2} color={sectionColors.glow} />
       
       {/* Ambient glow */}
-      <pointLight position={[0, 3, 0]} intensity={1} color="#a855f7" distance={8} />
+      <pointLight position={[0, 3, 0]} intensity={1} color={sectionColors.glow} distance={8} />
     </group>
   );
 }

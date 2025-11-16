@@ -11,13 +11,17 @@ import { Publications } from '@/components/Publications';
 import { Footer } from '@/components/Footer';
 import { Mascot3D } from '@/components/Mascot3D';
 import { useMascotScrollTrigger, MascotPosition } from '@/hooks/useScrollTrigger';
+import { GridScan } from '@/components/GridScan';
+import Dock from '@/components/Dock';
+import { Home, User, Briefcase, FileText, Mail, Github, Linkedin } from 'lucide-react';
 
 const Index = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [mascotPosition, setMascotPosition] = useState<MascotPosition>({
-    position: [2, 0, 0],
-    rotation: [0, 0, 0],
-    scale: 1.2,
+  const [mascotPosition, setMascotPosition] = useState<MascotPosition & { section?: string }>({
+    position: [2.5, 0, 0],
+    rotation: [0, -0.2, 0],
+    scale: 1.3,
+    section: 'hero',
   });
 
   // Track mouse for eye movement
@@ -33,17 +37,71 @@ const Index = () => {
   }, []);
 
   // GSAP ScrollTrigger for mascot positions
-  const handlePositionChange = useCallback((position: MascotPosition) => {
+  const handlePositionChange = useCallback((position: MascotPosition & { section?: string }) => {
     setMascotPosition(position);
   }, []);
 
   useMascotScrollTrigger(handlePositionChange);
 
+  const dockItems = [
+    { 
+      icon: <Home size={18} />, 
+      label: 'Home', 
+      onClick: () => document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' }) 
+    },
+    { 
+      icon: <User size={18} />, 
+      label: 'About', 
+      onClick: () => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }) 
+    },
+    { 
+      icon: <Briefcase size={18} />, 
+      label: 'Projects', 
+      onClick: () => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' }) 
+    },
+    { 
+      icon: <FileText size={18} />, 
+      label: 'Publications', 
+      onClick: () => document.getElementById('publications')?.scrollIntoView({ behavior: 'smooth' }) 
+    },
+    { 
+      icon: <Mail size={18} />, 
+      label: 'Contact', 
+      onClick: () => window.open('mailto:adarshas107@gmail.com') 
+    },
+    { 
+      icon: <Github size={18} />, 
+      label: 'GitHub', 
+      onClick: () => window.open('https://github.com/Adarsh-codesOP', '_blank') 
+    },
+    { 
+      icon: <Linkedin size={18} />, 
+      label: 'LinkedIn', 
+      onClick: () => window.open('https://linkedin.com/in/adarsh-as-oo7', '_blank') 
+    },
+  ];
+
   return (
     <SmoothScroll>
-      <div className="min-h-screen bg-background text-foreground">
-        {/* Fixed 3D Canvas with Mascot */}
-        <div className="fixed inset-0 z-10 pointer-events-none">
+      <div className="min-h-screen bg-background text-foreground relative">
+        {/* GridScan Background */}
+        <div className="fixed inset-0 z-0">
+          <GridScan
+            sensitivity={0.55}
+            lineThickness={1}
+            linesColor="#392e4e"
+            gridScale={0.1}
+            scanColor="#FF9FFC"
+            scanOpacity={0.4}
+            enablePost
+            bloomIntensity={0.6}
+            chromaticAberration={0.002}
+            noiseIntensity={0.01}
+          />
+        </div>
+
+        {/* Fixed 3D Canvas with Mascot - Above background, below content */}
+        <div className="fixed inset-0 z-30 pointer-events-none">
           <Canvas shadows>
             <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
             
@@ -71,12 +129,13 @@ const Index = () => {
             <Mascot3D 
               targetPosition={mascotPosition}
               mousePosition={mousePosition}
+              currentSection={mascotPosition.section}
             />
           </Canvas>
         </div>
 
         {/* Content */}
-        <div className="relative z-20">
+        <div className="relative z-40">
           <Hero />
           <About />
           <Skills />
@@ -84,6 +143,18 @@ const Index = () => {
           <Projects />
           <Publications />
           <Footer />
+        </div>
+
+        {/* Dock Navigation */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+          <div className="pointer-events-auto">
+            <Dock 
+              items={dockItems}
+              panelHeight={68}
+              baseItemSize={50}
+              magnification={70}
+            />
+          </div>
         </div>
       </div>
     </SmoothScroll>

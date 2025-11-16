@@ -2,7 +2,6 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Github, Linkedin, Mail } from 'lucide-react';
-import heroBg from '@/assets/hero-bg.jpg';
 
 export function Hero() {
   const containerRef = useRef<HTMLElement>(null);
@@ -12,7 +11,6 @@ export function Hero() {
   });
 
   // Parallax transforms
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
   const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0]);
 
@@ -38,41 +36,6 @@ export function Hero() {
 
   return (
     <section ref={containerRef} className="relative min-h-screen flex items-center justify-center overflow-hidden" id="hero">
-      {/* Parallax Background Layers */}
-      <motion.div 
-        className="absolute inset-0 z-0"
-        style={{ y: backgroundY }}
-      >
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url(${heroBg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background">
-            {/* Animated gradient orbs */}
-            <motion.div 
-              className="absolute top-20 left-20 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
-              animate={{ 
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.5, 0.3],
-              }}
-              transition={{ duration: 8, repeat: Infinity }}
-            />
-            <motion.div 
-              className="absolute bottom-20 right-20 w-96 h-96 bg-secondary/20 rounded-full blur-3xl"
-              animate={{ 
-                scale: [1.2, 1, 1.2],
-                opacity: [0.5, 0.3, 0.5],
-              }}
-              transition={{ duration: 10, repeat: Infinity }}
-            />
-          </div>
-        </div>
-      </motion.div>
-
       {/* Content with parallax */}
       <motion.div
         className="relative z-20 container mx-auto px-6 py-32"

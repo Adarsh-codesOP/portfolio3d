@@ -11,17 +11,17 @@ export interface MascotPosition {
 }
 
 export const useMascotScrollTrigger = (
-  onPositionChange: (position: MascotPosition) => void
+  onPositionChange: (position: MascotPosition & { section?: string }) => void
 ) => {
   useEffect(() => {
-    // Define mascot positions for each section
+    // Define mascot positions for each section - starting on right side of hero
     const sections = [
-      { id: 'hero', position: [2, 0, 0], rotation: [0, 0, 0], scale: 1.2 },
-      { id: 'about', position: [-2.5, -0.5, 0], rotation: [0, 0.3, 0], scale: 1 },
-      { id: 'skills', position: [2.5, 0.8, 0], rotation: [0, -0.3, 0], scale: 0.9 },
-      { id: 'highlights', position: [-2, -0.3, 0], rotation: [0, 0, 0.2], scale: 1 },
-      { id: 'projects', position: [0, 1.5, 0], rotation: [0, 0, 0], scale: 1.1 },
-      { id: 'publications', position: [1.5, 0, 0], rotation: [0, 0.2, 0], scale: 0.95 },
+      { id: 'hero', position: [2.5, 0, 0], rotation: [0, -0.2, 0], scale: 1.3 },
+      { id: 'about', position: [-2.5, -0.5, 0], rotation: [0, 0.3, 0], scale: 1.1 },
+      { id: 'skills', position: [2.5, 0.8, 0], rotation: [0, -0.3, 0], scale: 1.0 },
+      { id: 'highlights', position: [-2, -0.3, 0], rotation: [0, 0, 0.2], scale: 1.15 },
+      { id: 'projects', position: [0, 1.5, 0], rotation: [0, 0, 0], scale: 1.25 },
+      { id: 'publications', position: [1.5, 0, 0], rotation: [0, 0.2, 0], scale: 1.05 },
     ];
 
     sections.forEach((section, index) => {
@@ -36,6 +36,7 @@ export const useMascotScrollTrigger = (
             position: section.position as [number, number, number],
             rotation: section.rotation as [number, number, number],
             scale: section.scale,
+            section: section.id,
           });
         },
         onEnterBack: () => {
@@ -43,6 +44,7 @@ export const useMascotScrollTrigger = (
             position: section.position as [number, number, number],
             rotation: section.rotation as [number, number, number],
             scale: section.scale,
+            section: section.id,
           });
         },
       });
