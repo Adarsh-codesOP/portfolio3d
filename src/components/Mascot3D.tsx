@@ -1,4 +1,4 @@
-import { useRef, useMemo, useState, useEffect } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { MascotEyes } from './MascotEyes';
@@ -16,115 +16,22 @@ export function Mascot3D({ targetPosition, mousePosition, currentSection = 'hero
   const floatOffset = useRef(0);
   const glowRef = useRef<THREE.PointLight>(null);
   const materialRef = useRef<THREE.MeshPhysicalMaterial>(null);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const morphFactor = useRef(0); // Start as square (0 = square, 1 = blob)
 
-  // Track scroll progress for morphing
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY || window.pageYOffset;
-      const heroSection = document.getElementById('hero');
-      
-      if (!heroSection) {
-        // If hero section doesn't exist, start as blob
-        setScrollProgress(1);
-        return;
-      }
-      
-      const heroTop = heroSection.offsetTop;
-      const windowHeight = window.innerHeight;
-      
-      // Calculate progress: 
-      // 0 = at very top (square blob)
-      // 1 = when hero section is reached (organic blob)
-      // Smooth transition over the first viewport height
-      const transitionDistance = windowHeight * 0.8; // Transition over 80% of viewport
-      const progress = Math.max(0, Math.min(1, scrollY / transitionDistance));
-      
-      setScrollProgress(progress);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial call
-    
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Color schemes for different sections - Theme colors with variations
+  // Color schemes for different sections
   const sectionColors = useMemo(() => {
     const colors: Record<string, { main: string; accent: string; glow: string }> = {
-      hero: { main: '#4CC9F0', accent: '#4361EE', glow: '#4CC9F0' },
-      about: { main: '#5AB5F5', accent: '#4361EE', glow: '#5AB5F5' },
-      skills: { main: '#4361EE', accent: '#4CC9F0', glow: '#4361EE' },
-      highlights: { main: '#4CC9F0', accent: '#5AB5F5', glow: '#4CC9F0' },
-      projects: { main: '#4361EE', accent: '#4CC9F0', glow: '#4361EE' },
-      publications: { main: '#5AB5F5', accent: '#4361EE', glow: '#5AB5F5' },
+      hero: { main: '#a855f7', accent: '#ec4899', glow: '#a855f7' },
+      about: { main: '#3b82f6', accent: '#60a5fa', glow: '#3b82f6' },
+      skills: { main: '#10b981', accent: '#34d399', glow: '#10b981' },
+      highlights: { main: '#f59e0b', accent: '#fbbf24', glow: '#f59e0b' },
+      projects: { main: '#ef4444', accent: '#f87171', glow: '#ef4444' },
+      publications: { main: '#8b5cf6', accent: '#a78bfa', glow: '#8b5cf6' },
     };
     return colors[currentSection] || colors.hero;
   }, [currentSection]);
 
-  // Create geometries with same vertex count for morphing
-  const squareGeometry = useMemo(() => {
-    // Use sphere as base to match vertex count, then shape it into rounded square
-    const geo = new THREE.SphereGeometry(1, 64, 64);
-    const positions = geo.attributes.position;
-    
-    // Transform sphere into rounded square blob
-    for (let i = 0; i < positions.count; i++) {
-      const x = positions.getX(i);
-      const y = positions.getY(i);
-      const z = positions.getZ(i);
-      
-      // Normalize to get direction vector
-      const length = Math.sqrt(x * x + y * y + z * z);
-      if (length === 0) continue;
-      
-      const nx = x / length;
-      const ny = y / length;
-      const nz = z / length;
-      
-      // Create square shape using infinity norm (max of absolute values)
-      // This creates a cube-like shape
-      const cornerRadius = 0.15; // Smaller = more square
-      const maxAbs = Math.max(Math.abs(nx), Math.abs(ny), Math.abs(nz));
-      
-      // Create square shape - use infinity norm to create cube
-      let newX, newY, newZ;
-      
-      if (maxAbs > 0.01) {
-        // Scale to create square shape
-        const scale = 1 / maxAbs;
-        newX = nx * scale;
-        newY = ny * scale;
-        newZ = nz * scale;
-        
-        // Round the corners slightly
-        const dist = Math.sqrt(newX * newX + newY * newY + newZ * newZ);
-        if (dist > 1 - cornerRadius) {
-          const factor = (1 - cornerRadius) / dist;
-          newX *= factor;
-          newY *= factor;
-          newZ *= factor;
-        }
-      } else {
-        newX = nx;
-        newY = ny;
-        newZ = nz;
-      }
-      
-      // Normalize back to unit sphere
-      const newLength = Math.sqrt(newX * newX + newY * newY + newZ * newZ);
-      if (newLength > 0) {
-        positions.setXYZ(i, newX / newLength, newY / newLength, newZ / newLength);
-      }
-    }
-    
-    geo.computeVertexNormals();
-    return geo;
-  }, []);
-
-  // Create organic blob geometry (same vertex count)
-  const blobGeometry = useMemo(() => {
+  // Create smooth blob geometry
+  const geometry = useMemo(() => {
     const geo = new THREE.SphereGeometry(1, 64, 64);
     const positions = geo.attributes.position;
     
@@ -148,45 +55,8 @@ export function Mascot3D({ targetPosition, mousePosition, currentSection = 'hero
     return geo;
   }, []);
 
-  // Create morphing geometry that interpolates between square and blob
-  const geometry = useMemo(() => {
-    // Use square as base, we'll morph it in useFrame
-    return squareGeometry.clone();
-  }, [squareGeometry]);
-
   useFrame((state) => {
-    if (!groupRef.current || !bodyRef.current || !geometry) return;
-
-    // Smooth morph factor based on scroll progress
-    // 0 = square (at top), 1 = blob (when hero is visible)
-    // Start as square (morphFactor = 0), morph to blob as we scroll
-    morphFactor.current = THREE.MathUtils.lerp(morphFactor.current, Math.min(scrollProgress, 1), 0.05);
-
-    // Morph geometry between square and blob
-    const squarePositions = squareGeometry.attributes.position;
-    const blobPositions = blobGeometry.attributes.position;
-    const currentPositions = geometry.attributes.position;
-    
-    if (squarePositions.count === blobPositions.count && currentPositions.count === squarePositions.count) {
-      for (let i = 0; i < currentPositions.count; i++) {
-        const squareX = squarePositions.getX(i);
-        const squareY = squarePositions.getY(i);
-        const squareZ = squarePositions.getZ(i);
-        
-        const blobX = blobPositions.getX(i);
-        const blobY = blobPositions.getY(i);
-        const blobZ = blobPositions.getZ(i);
-        
-        // Interpolate between square and blob
-        const x = THREE.MathUtils.lerp(squareX, blobX, morphFactor.current);
-        const y = THREE.MathUtils.lerp(squareY, blobY, morphFactor.current);
-        const z = THREE.MathUtils.lerp(squareZ, blobZ, morphFactor.current);
-        
-        currentPositions.setXYZ(i, x, y, z);
-      }
-      currentPositions.needsUpdate = true;
-      geometry.computeVertexNormals();
-    }
+    if (!groupRef.current || !bodyRef.current) return;
 
     // Floating animation
     floatOffset.current += 0.008;
