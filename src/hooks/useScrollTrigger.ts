@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -14,19 +14,17 @@ export const useMascotScrollTrigger = (
   onPositionChange: (position: MascotPosition & { section?: string }) => void
 ) => {
   useEffect(() => {
-    // Define mascot positions for each section - starting on right side of hero
+    // Define mascot positions for each section - unique angles
     const sections = [
-      { id: 'hero', position: [2.5, 0, 0], rotation: [0, -0.2, 0], scale: 1.3 },
-      { id: 'about', position: [-2.5, -0.5, 0], rotation: [0, 0.3, 0], scale: 1.1 },
-      { id: 'skills', position: [2.5, 0.8, 0], rotation: [0, -0.3, 0], scale: 1.0 },
-      { id: 'highlights', position: [-2, -0.3, 0], rotation: [0, 0, 0.2], scale: 1.15 },
-      { id: 'projects', position: [0, 1.5, 0], rotation: [0, 0, 0], scale: 1.25 },
-      { id: 'publications', position: [1.5, 0, 0], rotation: [0, 0.2, 0], scale: 1.05 },
+      { id: 'hero', position: [2.5, 0, 0], rotation: [0, -0.5, 0], scale: 1.3 }, // Side view
+      { id: 'about', position: [-2.5, -1, 1], rotation: [0.2, 0.5, 0.1], scale: 1.2 }, // Low angle
+      { id: 'skills', position: [0, 0.5, 0], rotation: [Math.PI / 2, 0, 0], scale: 1.0 }, // Top down view
+      { id: 'highlights', position: [-2, 0, 0], rotation: [0, 0, Math.PI / 4], scale: 1.15 }, // Banked turn
+      { id: 'projects', position: [2, 1.5, 1], rotation: [-0.2, -0.5, -0.1], scale: 1.25 }, // High angle
+      { id: 'publications', position: [0, -0.5, 2], rotation: [0, 0, 0], scale: 1.1 }, // Close up front
     ];
 
     sections.forEach((section, index) => {
-      const nextSection = sections[index + 1];
-      
       ScrollTrigger.create({
         trigger: `#${section.id}`,
         start: 'top center',
@@ -48,6 +46,30 @@ export const useMascotScrollTrigger = (
           });
         },
       });
+    });
+
+    // Add a final trigger for the footer to center the drone
+    ScrollTrigger.create({
+      trigger: 'footer',
+      start: 'top bottom',
+      onEnter: () => {
+        onPositionChange({
+          position: [0, 0, 0],
+          rotation: [0, 0, 0],
+          scale: 1.5,
+          section: 'footer',
+        });
+      },
+      onLeaveBack: () => {
+        // Return to publications position when leaving footer upwards
+        const lastSection = sections[sections.length - 1];
+        onPositionChange({
+          position: lastSection.position as [number, number, number],
+          rotation: lastSection.rotation as [number, number, number],
+          scale: lastSection.scale,
+          section: lastSection.id,
+        });
+      }
     });
 
     return () => {

@@ -53,33 +53,49 @@ export function Hero() {
             </span>
           </motion.div>
 
-          <motion.h1 
+          <motion.h1
             variants={itemVariants}
             className="text-6xl md:text-8xl font-display font-bold mb-6 leading-[1.1] tracking-[-0.03em]"
           >
-            <span className="text-gradient">Adarsh A S</span>
+            <span className="text-gradient inline-flex overflow-hidden">
+              {Array.from("Adarsh A S").map((char, index) => (
+                <motion.span
+                  key={index}
+                  initial={{ y: 100, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{
+                    duration: 0.8,
+                    ease: [0.2, 0.65, 0.3, 0.9],
+                    delay: 0.2 + index * 0.05,
+                  }}
+                  className="inline-block"
+                >
+                  {char === " " ? "\u00A0" : char}
+                </motion.span>
+              ))}
+            </span>
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             variants={itemVariants}
             className="text-xl md:text-2xl text-muted-foreground max-w-2xl mb-8 leading-relaxed font-sans font-normal"
           >
-            Aspiring AI Engineer building scalable applications and deploying high-performance solutions. 
+            Aspiring AI Engineer building scalable applications and deploying high-performance solutions.
             Proficient in full-stack development, MLOps, and cloud platforms.
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-wrap gap-4 mb-12">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="group relative overflow-hidden bg-primary hover:bg-primary/90 glow-primary"
               onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
             >
               <span className="relative z-10">Explore My Work</span>
               <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </Button>
-            
-            <Button 
-              size="lg" 
+
+            <Button
+              size="lg"
               variant="outline"
               className="glass border-border/50 hover:border-primary/50"
               onClick={() => window.open('mailto:adarshas107@gmail.com')}
@@ -89,23 +105,23 @@ export function Hero() {
           </motion.div>
 
           <motion.div variants={itemVariants} className="flex gap-4">
-            <a 
-              href="https://github.com/Adarsh-codesOP" 
-              target="_blank" 
+            <a
+              href="https://github.com/Adarsh-codesOP"
+              target="_blank"
               rel="noopener noreferrer"
               className="p-3 glass rounded-full hover:bg-primary/20 transition-all hover:glow-primary"
             >
               <Github className="w-6 h-6" />
             </a>
-            <a 
-              href="https://linkedin.com/in/adarsh-as-oo7" 
-              target="_blank" 
+            <a
+              href="https://linkedin.com/in/adarsh-as-oo7"
+              target="_blank"
               rel="noopener noreferrer"
               className="p-3 glass rounded-full hover:bg-secondary/20 transition-all hover:glow-secondary"
             >
               <Linkedin className="w-6 h-6" />
             </a>
-            <a 
+            <a
               href="mailto:adarshas107@gmail.com"
               className="p-3 glass rounded-full hover:bg-accent/20 transition-all"
             >

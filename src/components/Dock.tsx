@@ -134,39 +134,65 @@ export default function Dock({
   const heightRow = useTransform(isHovered, [0, 1], [panelHeight, maxHeight]);
   const height = useSpring(heightRow, spring);
 
+  // Hide dock when near bottom of page
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      // Hide if within 100px of bottom
+      setIsVisible(scrollPosition < documentHeight - 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <motion.div style={{ height, scrollbarWidth: 'none' }} className="dock-outer">
-      <motion.div
-        onMouseMove={({ pageX }) => {
-          isHovered.set(1);
-          mouseX.set(pageX);
-        }}
-        onMouseLeave={() => {
-          isHovered.set(0);
-          mouseX.set(Infinity);
-        }}
-        className={`dock-panel ${className}`}
-        style={{ height: panelHeight }}
-        role="toolbar"
-        aria-label="Application dock"
-      >
-        {items.map((item, index) => (
-          <DockItem
-            key={index}
-            onClick={item.onClick}
-            className={item.className}
-            mouseX={mouseX}
-            spring={spring}
-            distance={distance}
-            magnification={magnification}
-            baseItemSize={baseItemSize}
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ y: 100 }}
+          animate={{ y: 0 }}
+          exit={{ y: 100 }}
+          transition={{ duration: 0.3 }}
+          style={{ height, scrollbarWidth: 'none' }}
+          className="dock-outer"
+        >
+          <motion.div
+            onMouseMove={({ pageX }) => {
+              isHovered.set(1);
+              mouseX.set(pageX);
+            }}
+            onMouseLeave={() => {
+              isHovered.set(0);
+              mouseX.set(Infinity);
+            }}
+            className={`dock-panel ${className}`}
+            style={{ height: panelHeight }}
+            role="toolbar"
+            aria-label="Application dock"
           >
-            <DockIcon>{item.icon}</DockIcon>
-            <DockLabel>{item.label}</DockLabel>
-          </DockItem>
-        ))}
-      </motion.div>
-    </motion.div>
+            {items.map((item, index) => (
+              <DockItem
+                key={index}
+                onClick={item.onClick}
+                className={item.className}
+                mouseX={mouseX}
+                spring={spring}
+                distance={distance}
+                magnification={magnification}
+                baseItemSize={baseItemSize}
+              >
+                <DockIcon>{item.icon}</DockIcon>
+                <DockLabel>{item.label}</DockLabel>
+              </DockItem>
+            ))}
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
