@@ -1,13 +1,15 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, ArrowRight } from 'lucide-react';
+import { ContactForm } from './ContactForm';
 
 export function Publications() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
+  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -36,7 +38,7 @@ export function Publications() {
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
         >
-          <motion.h2 
+          <motion.h2
             variants={itemVariants}
             className="text-5xl md:text-6xl font-display font-bold mb-16 text-gradient tracking-tight"
           >
@@ -75,7 +77,7 @@ export function Publications() {
             </motion.div>
 
             {/* CTA */}
-            <motion.div 
+            <motion.div
               variants={itemVariants}
               className="relative"
             >
@@ -86,13 +88,13 @@ export function Publications() {
                     Let's Build Something Amazing
                   </h3>
                   <p className="text-muted-foreground mb-6 leading-relaxed">
-                    Interested in collaborating on innovative projects or discussing new opportunities? 
+                    Interested in collaborating on innovative projects or discussing new opportunities?
                     I'm always open to connecting with fellow developers and tech enthusiasts.
                   </p>
-                  <Button 
+                  <Button
                     size="lg"
                     className="group bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 glow-primary"
-                    onClick={() => window.open('mailto:adarshas107@gmail.com')}
+                    onClick={() => setIsContactFormOpen(true)}
                   >
                     Get In Touch
                     <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -103,6 +105,9 @@ export function Publications() {
           </div>
         </motion.div>
       </div>
+
+      {/* Contact Form Modal */}
+      <ContactForm isOpen={isContactFormOpen} onClose={() => setIsContactFormOpen(false)} />
     </section>
   );
 }

@@ -1,27 +1,17 @@
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence, useScroll } from 'framer-motion';
-import { Children, cloneElement, useEffect, useMemo, useRef, useState, ReactNode, ReactElement } from 'react';
-import { cn } from '@/lib/utils';
+'use client';
+
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { Children, cloneElement, useEffect, useMemo, useRef, useState } from 'react';
 import { Bot, Plane } from 'lucide-react';
 import './Dock.css';
 
-interface DockItemProps {
-  children: ReactNode;
-  className?: string;
-  onClick?: () => void;
-  mouseX: any; // Using any for MotionValue to avoid complex type issues
-  spring: { mass: number; stiffness: number; damping: number };
-  distance: number;
-  magnification: number;
-  baseItemSize: number;
-}
-
-function DockItem({ children, className = '', onClick, mouseX, spring, distance, magnification, baseItemSize }: DockItemProps) {
-  const ref = useRef<HTMLDivElement>(null);
+function DockItem({ children, className = '', onClick, mouseX, spring, distance, magnification, baseItemSize }) {
+  const ref = useRef(null);
   const isHovered = useMotionValue(0);
 
-  const mouseDistance = useTransform(mouseX, (val: number) => {
+  const mouseDistance = useTransform(mouseX, val => {
     const rect = ref.current?.getBoundingClientRect() ?? {
-      x: 0,
+      x: 0 as number,
       width: baseItemSize
     };
     return val - rect.x - baseItemSize / 2;
@@ -47,23 +37,18 @@ function DockItem({ children, className = '', onClick, mouseX, spring, distance,
       role="button"
       aria-haspopup="true"
     >
-      {Children.map(children, child => cloneElement(child as ReactElement, { isHovered }))}
+      {Children.map(children, child => cloneElement(child, { isHovered }))}
     </motion.div>
   );
 }
 
-interface DockLabelProps {
-  children: ReactNode;
-  className?: string;
-  isHovered?: any; // Using any for MotionValue
-}
-
-function DockLabel({ children, className = '', isHovered }: DockLabelProps) {
+function DockLabel({ children, className = '', ...rest }) {
+  const { isHovered } = rest;
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (!isHovered) return;
-    const unsubscribe = isHovered.on('change', (latest: number) => {
+    const unsubscribe = isHovered.on('change', latest => {
       setIsVisible(latest === 1);
     });
     return () => unsubscribe();
@@ -88,17 +73,12 @@ function DockLabel({ children, className = '', isHovered }: DockLabelProps) {
   );
 }
 
-interface DockIconProps {
-  children: ReactNode;
-  className?: string;
-}
-
-function DockIcon({ children, className = '' }: DockIconProps) {
+function DockIcon({ children, className = '' }) {
   return <div className={`dock-icon ${className}`}>{children}</div>;
 }
 
 export interface DockItemData {
-  icon: ReactNode;
+  icon: React.ReactNode;
   label: string;
   onClick?: () => void;
   className?: string;
@@ -120,7 +100,7 @@ interface DockProps {
 export default function Dock({
   items,
   className = '',
-  spring = { mass: 0.1, stiffness: 150, damping: 12 },
+  spring = { mass: 0.05, stiffness: 400, damping: 25 },
   magnification = 70,
   distance = 200,
   panelHeight = 68,
@@ -131,6 +111,7 @@ export default function Dock({
 }: DockProps) {
   const mouseX = useMotionValue(Infinity);
   const isHovered = useMotionValue(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   const maxHeight = useMemo(
     () => Math.max(dockHeight, magnification + magnification / 2 + 4),
@@ -140,13 +121,10 @@ export default function Dock({
   const height = useSpring(heightRow, spring);
 
   // Hide dock when near bottom of page
-  const [isVisible, setIsVisible] = useState(true);
-
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
-      // Hide if within 100px of bottom
       setIsVisible(scrollPosition < documentHeight - 100);
     };
 
@@ -158,10 +136,15 @@ export default function Dock({
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ y: 100 }}
-          animate={{ y: 0 }}
-          exit={{ y: 100 }}
-          transition={{ duration: 0.3 }}
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{
+            type: 'spring',
+            stiffness: 500,
+            damping: 35,
+            mass: 0.5
+          }}
           style={{ height, scrollbarWidth: 'none' }}
           className="dock-outer"
         >
@@ -195,10 +178,10 @@ export default function Dock({
               </DockItem>
             ))}
 
-            {/* Separator and Mascot Toggle */}
+            {/* Mascot Toggle */}
             {onToggleMascot && (
               <>
-                <div className="w-px h-8 bg-white/10 mx-2 self-center" />
+                <div className="w-px h-8 bg-white/10 mx-1" />
                 <DockItem
                   onClick={onToggleMascot}
                   mouseX={mouseX}
@@ -208,7 +191,7 @@ export default function Dock({
                   baseItemSize={baseItemSize}
                 >
                   <DockIcon>
-                    {mascotType === 'drone' ? <Bot size={24} /> : <Plane size={24} />}
+                    {mascotType === 'drone' ? <Bot size={18} /> : <Plane size={18} />}
                   </DockIcon>
                   <DockLabel>
                     {mascotType === 'drone' ? 'Switch to Robot' : 'Switch to Drone'}

@@ -92,15 +92,15 @@ const Index = () => {
   return (
     <SmoothScroll>
       <div className="min-h-screen bg-background text-foreground relative">
-        {/* GridScan Background - Optimized for mobile */}
+        {/* GridScan Background - Changes color based on mascot type */}
         <div className="fixed inset-0 z-0">
           {isMobile ? (
             <GridScan
               sensitivity={0.3}
               lineThickness={0.8}
-              linesColor="#392e4e"
+              linesColor={mascotType === 'drone' ? "#392e4e" : "#2e4e4e"}
               gridScale={0.15}
-              scanColor="#FF9FFC"
+              scanColor={mascotType === 'drone' ? "#FF9FFC" : "#9FFCFF"}
               scanOpacity={0.3}
               enablePost={false}
               bloomIntensity={0}
@@ -111,9 +111,9 @@ const Index = () => {
             <GridScan
               sensitivity={0.55}
               lineThickness={1}
-              linesColor="#392e4e"
+              linesColor={mascotType === 'drone' ? "#392e4e" : "#2e4e4e"}
               gridScale={0.1}
-              scanColor="#FF9FFC"
+              scanColor={mascotType === 'drone' ? "#FF9FFC" : "#9FFCFF"}
               scanOpacity={0.4}
               enablePost
               bloomIntensity={0.6}

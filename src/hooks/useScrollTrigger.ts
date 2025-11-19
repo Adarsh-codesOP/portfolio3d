@@ -16,15 +16,15 @@ export const useMascotScrollTrigger = (
   useEffect(() => {
     // Define mascot positions for each section - unique angles
     const sections = [
-      { id: 'hero', position: [2.5, 0, 0], rotation: [0, -0.5, 0], scale: 1.3 }, // Side view
-      { id: 'about', position: [-2.5, -1, 1], rotation: [0.2, 0.5, 0.1], scale: 1.2 }, // Low angle
-      { id: 'skills', position: [0, 0.5, 0], rotation: [Math.PI / 2, 0, 0], scale: 1.0 }, // Top down view
-      { id: 'highlights', position: [-2, 0, 0], rotation: [0, 0, Math.PI / 4], scale: 1.15 }, // Banked turn
-      { id: 'projects', position: [2, 1.5, 1], rotation: [-0.2, -0.5, -0.1], scale: 1.25 }, // High angle
-      { id: 'publications', position: [0, -0.5, 2], rotation: [0, 0, 0], scale: 1.1 }, // Close up front
+      { id: 'hero', position: [2.0, 0, 0], rotation: [0, -0.3, 0], scale: 0.8 }, // Side view, smaller
+      { id: 'about', position: [-2.0, -0.5, 1], rotation: [0.1, 0.3, 0], scale: 0.7 }, // Slight turn
+      { id: 'skills', position: [1.5, 0, 0], rotation: [0, -0.3, 0.1], scale: 0.7 }, // Upright, slight tilt
+      { id: 'highlights', position: [-1.5, 0, 0], rotation: [0, 0.3, -0.1], scale: 0.7 }, // Other side
+      { id: 'projects', position: [1.5, 0.5, 1], rotation: [-0.1, -0.4, 0], scale: 0.75 }, // Slight high angle
+      { id: 'publications', position: [0, -0.2, 2], rotation: [0, 0, 0], scale: 0.8 }, // Front view
     ];
 
-    sections.forEach((section, index) => {
+    sections.forEach((section) => {
       ScrollTrigger.create({
         trigger: `#${section.id}`,
         start: 'top center',
@@ -56,7 +56,7 @@ export const useMascotScrollTrigger = (
         onPositionChange({
           position: [0, 0, 0],
           rotation: [0, 0, 0],
-          scale: 1.5,
+          scale: 1.0,
           section: 'footer',
         });
       },

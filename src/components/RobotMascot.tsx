@@ -94,20 +94,9 @@ export function RobotMascot({ targetPosition, mousePosition, currentSection = 'h
         group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, targetPosition.rotation[2], 0.05);
 
         // Scale interpolation
-        // Increased scale multiplier from 0.5 to 0.8 for better visibility
-        const targetScale = targetPosition.scale * 0.8;
+        // Reduced scale multiplier to 0.5 for smaller size
+        const targetScale = targetPosition.scale * 0.6;
         group.current.scale.setScalar(THREE.MathUtils.lerp(group.current.scale.x, targetScale, 0.05));
-
-        // Head tracking (if head exists)
-        const head = group.current.getObjectByName('Head_4');
-        if (head) {
-            // Simple head tracking
-            const lookX = -mousePosition.y * 0.5;
-            const lookY = mousePosition.x * 0.5;
-
-            head.rotation.x = THREE.MathUtils.lerp(head.rotation.x, lookX, 0.1);
-            head.rotation.y = THREE.MathUtils.lerp(head.rotation.y, lookY, 0.1);
-        }
     });
 
     return (

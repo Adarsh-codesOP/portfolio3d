@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Github, Linkedin, Mail } from 'lucide-react';
+import { Github, Linkedin, Mail, Download } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 export function Hero() {
@@ -58,17 +58,18 @@ export function Hero() {
             className="text-6xl md:text-8xl font-display font-bold mb-6 leading-[1.1] tracking-[-0.03em]"
           >
             <span className="text-gradient inline-flex overflow-hidden">
-              {Array.from("Adarsh A S").map((char, index) => (
+              {Array.from("ADARSH A S").map((char, index) => (
                 <motion.span
                   key={index}
-                  initial={{ y: 100, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
+                  initial={{ y: 100, opacity: 0, rotateX: -90 }}
+                  animate={{ y: 0, opacity: 1, rotateX: 0 }}
                   transition={{
-                    duration: 0.8,
+                    duration: 0.6,
                     ease: [0.2, 0.65, 0.3, 0.9],
                     delay: 0.2 + index * 0.05,
                   }}
                   className="inline-block"
+                  style={{ transformOrigin: 'bottom' }}
                 >
                   {char === " " ? "\u00A0" : char}
                 </motion.span>
@@ -98,9 +99,10 @@ export function Hero() {
               size="lg"
               variant="outline"
               className="glass border-border/50 hover:border-primary/50"
-              onClick={() => window.open('mailto:adarshas107@gmail.com')}
+              onClick={() => window.open('https://fgzehdqzrqgrugmgifem.supabase.co/storage/v1/object/public/resume/Adarsh-Ai-SDE.pdf', '_blank')}
             >
-              Get in Touch
+              <Download className="mr-2 w-5 h-5" />
+              Download Resume
             </Button>
           </motion.div>
 
