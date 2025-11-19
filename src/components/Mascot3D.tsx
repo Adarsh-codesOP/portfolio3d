@@ -62,7 +62,7 @@ export function Mascot3D({ targetPosition, mousePosition, currentSection = 'hero
     if (gimbalRef.current) {
       // Calculate look angles
       const lookX = -mousePosition.y * 0.8; // Pitch
-      const lookY = -mousePosition.x * 0.8; // Yaw
+      const lookY = mousePosition.x * 0.8; // Yaw - Inverted based on user feedback
 
       // Faster tracking (0.2 lerp)
       gimbalRef.current.rotation.x = THREE.MathUtils.lerp(gimbalRef.current.rotation.x, lookX, 0.2);
@@ -173,6 +173,18 @@ export function Mascot3D({ targetPosition, mousePosition, currentSection = 'hero
                 emissive="#fff"
                 emissiveIntensity={0.1}
               />
+            </mesh>
+
+            {/* Camera Pupil (The "Eye") - Larger */}
+            <mesh position={[0, 0, 0.27]}>
+              <circleGeometry args={[0.08, 32]} />
+              <meshBasicMaterial color="#000" />
+            </mesh>
+
+            {/* Pupil Reflection/Glint */}
+            <mesh position={[0.03, 0.03, 0.275]}>
+              <circleGeometry args={[0.02, 16]} />
+              <meshBasicMaterial color="#fff" opacity={0.8} transparent />
             </mesh>
 
             {/* Camera Active LED */}
