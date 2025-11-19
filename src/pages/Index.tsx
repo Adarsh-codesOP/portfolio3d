@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { PerspectiveCamera, Environment } from '@react-three/drei';
 import { SmoothScroll } from '@/components/SmoothScroll';
@@ -10,6 +10,7 @@ import { Projects } from '@/components/Projects';
 import { Publications } from '@/components/Publications';
 import { Footer } from '@/components/Footer';
 import { Mascot3D } from '@/components/Mascot3D';
+import { RobotMascot } from '@/components/RobotMascot';
 import { useMascotScrollTrigger, MascotPosition } from '@/hooks/useScrollTrigger';
 import { GridScan } from '@/components/GridScan';
 import Dock from '@/components/Dock';
@@ -25,11 +26,12 @@ const Index = () => {
     scale: 1.3,
     section: 'hero',
   });
+  const [mascotType, setMascotType] = useState<'drone' | 'robot'>('drone');
 
   // Track mouse for eye movement (only on desktop)
   useEffect(() => {
     if (isMobile) return;
-    
+
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
@@ -50,40 +52,40 @@ const Index = () => {
   useMascotScrollTrigger(handlePositionChange);
 
   const dockItems = [
-    { 
-      icon: <Home size={18} />, 
-      label: 'Home', 
-      onClick: () => document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' }) 
+    {
+      icon: <Home size={18} />,
+      label: 'Home',
+      onClick: () => document.getElementById('hero')?.scrollIntoView({ behavior: 'smooth' })
     },
-    { 
-      icon: <User size={18} />, 
-      label: 'About', 
-      onClick: () => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }) 
+    {
+      icon: <User size={18} />,
+      label: 'About',
+      onClick: () => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
     },
-    { 
-      icon: <Briefcase size={18} />, 
-      label: 'Projects', 
-      onClick: () => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' }) 
+    {
+      icon: <Briefcase size={18} />,
+      label: 'Projects',
+      onClick: () => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
     },
-    { 
-      icon: <FileText size={18} />, 
-      label: 'Publications', 
-      onClick: () => document.getElementById('publications')?.scrollIntoView({ behavior: 'smooth' }) 
+    {
+      icon: <FileText size={18} />,
+      label: 'Publications',
+      onClick: () => document.getElementById('publications')?.scrollIntoView({ behavior: 'smooth' })
     },
-    { 
-      icon: <Mail size={18} />, 
-      label: 'Contact', 
-      onClick: () => window.open('mailto:adarshas107@gmail.com') 
+    {
+      icon: <Mail size={18} />,
+      label: 'Contact',
+      onClick: () => window.open('mailto:adarshas107@gmail.com')
     },
-    { 
-      icon: <Github size={18} />, 
-      label: 'GitHub', 
-      onClick: () => window.open('https://github.com/Adarsh-codesOP', '_blank') 
+    {
+      icon: <Github size={18} />,
+      label: 'GitHub',
+      onClick: () => window.open('https://github.com/Adarsh-codesOP', '_blank')
     },
-    { 
-      icon: <Linkedin size={18} />, 
-      label: 'LinkedIn', 
-      onClick: () => window.open('https://linkedin.com/in/adarsh-as-oo7', '_blank') 
+    {
+      icon: <Linkedin size={18} />,
+      label: 'LinkedIn',
+      onClick: () => window.open('https://linkedin.com/in/adarsh-as-oo7', '_blank')
     },
   ];
 
@@ -126,12 +128,12 @@ const Index = () => {
           <div className="fixed inset-0 z-30 pointer-events-none">
             <Canvas shadows>
               <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
-              
+
               {/* Lighting */}
               <ambientLight intensity={0.4} />
-              <directionalLight 
-                position={[5, 5, 5]} 
-                intensity={1} 
+              <directionalLight
+                position={[5, 5, 5]}
+                intensity={1}
                 castShadow
                 shadow-mapSize-width={2048}
                 shadow-mapSize-height={2048}
@@ -143,16 +145,26 @@ const Index = () => {
                 intensity={0.5}
                 castShadow
               />
-              
+
               {/* Environment for reflections */}
               <Environment preset="city" />
-              
+
               {/* Mascot */}
-              <Mascot3D 
-                targetPosition={mascotPosition}
-                mousePosition={mousePosition}
-                currentSection={mascotPosition.section}
-              />
+              <Suspense fallback={null}>
+                {mascotType === 'drone' ? (
+                  <Mascot3D
+                    targetPosition={mascotPosition}
+                    mousePosition={mousePosition}
+                    currentSection={mascotPosition.section}
+                  />
+                ) : (
+                  <RobotMascot
+                    targetPosition={mascotPosition}
+                    mousePosition={mousePosition}
+                    currentSection={mascotPosition.section}
+                  />
+                )}
+              </Suspense>
             </Canvas>
           </div>
         )}
@@ -169,13 +181,12 @@ const Index = () => {
         </div>
 
         {/* Dock Navigation */}
-        <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 pointer-events-none">
           <div className="pointer-events-auto">
-            <Dock 
+            <Dock
               items={dockItems}
-              panelHeight={isMobile ? 60 : 68}
-              baseItemSize={isMobile ? 44 : 50}
-              magnification={isMobile ? 60 : 70}
+              mascotType={mascotType}
+              onToggleMascot={() => setMascotType(prev => prev === 'drone' ? 'robot' : 'drone')}
             />
           </div>
         </div>

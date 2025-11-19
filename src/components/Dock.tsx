@@ -1,13 +1,14 @@
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
-import { Children, cloneElement, useEffect, useMemo, useRef, useState, ReactNode } from 'react';
-
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence, useScroll } from 'framer-motion';
+import { Children, cloneElement, useEffect, useMemo, useRef, useState, ReactNode, ReactElement } from 'react';
+import { cn } from '@/lib/utils';
+import { Bot, Plane } from 'lucide-react';
 import './Dock.css';
 
 interface DockItemProps {
   children: ReactNode;
   className?: string;
   onClick?: () => void;
-  mouseX: ReturnType<typeof useMotionValue<number>>;
+  mouseX: any; // Using any for MotionValue to avoid complex type issues
   spring: { mass: number; stiffness: number; damping: number };
   distance: number;
   magnification: number;
@@ -18,7 +19,7 @@ function DockItem({ children, className = '', onClick, mouseX, spring, distance,
   const ref = useRef<HTMLDivElement>(null);
   const isHovered = useMotionValue(0);
 
-  const mouseDistance = useTransform(mouseX, val => {
+  const mouseDistance = useTransform(mouseX, (val: number) => {
     const rect = ref.current?.getBoundingClientRect() ?? {
       x: 0,
       width: baseItemSize
@@ -46,7 +47,7 @@ function DockItem({ children, className = '', onClick, mouseX, spring, distance,
       role="button"
       aria-haspopup="true"
     >
-      {Children.map(children, child => cloneElement(child as React.ReactElement, { isHovered }))}
+      {Children.map(children, child => cloneElement(child as ReactElement, { isHovered }))}
     </motion.div>
   );
 }
@@ -54,7 +55,7 @@ function DockItem({ children, className = '', onClick, mouseX, spring, distance,
 interface DockLabelProps {
   children: ReactNode;
   className?: string;
-  isHovered?: ReturnType<typeof useMotionValue<number>>;
+  isHovered?: any; // Using any for MotionValue
 }
 
 function DockLabel({ children, className = '', isHovered }: DockLabelProps) {
@@ -62,7 +63,7 @@ function DockLabel({ children, className = '', isHovered }: DockLabelProps) {
 
   useEffect(() => {
     if (!isHovered) return;
-    const unsubscribe = isHovered.on('change', latest => {
+    const unsubscribe = isHovered.on('change', (latest: number) => {
       setIsVisible(latest === 1);
     });
     return () => unsubscribe();
@@ -96,7 +97,7 @@ function DockIcon({ children, className = '' }: DockIconProps) {
   return <div className={`dock-icon ${className}`}>{children}</div>;
 }
 
-export interface DockItem {
+export interface DockItemData {
   icon: ReactNode;
   label: string;
   onClick?: () => void;
@@ -104,7 +105,7 @@ export interface DockItem {
 }
 
 interface DockProps {
-  items: DockItem[];
+  items: DockItemData[];
   className?: string;
   spring?: { mass: number; stiffness: number; damping: number };
   magnification?: number;
@@ -112,6 +113,8 @@ interface DockProps {
   panelHeight?: number;
   dockHeight?: number;
   baseItemSize?: number;
+  mascotType?: 'drone' | 'robot';
+  onToggleMascot?: () => void;
 }
 
 export default function Dock({
@@ -122,7 +125,9 @@ export default function Dock({
   distance = 200,
   panelHeight = 68,
   dockHeight = 256,
-  baseItemSize = 50
+  baseItemSize = 50,
+  mascotType,
+  onToggleMascot,
 }: DockProps) {
   const mouseX = useMotionValue(Infinity);
   const isHovered = useMotionValue(0);
@@ -189,10 +194,31 @@ export default function Dock({
                 <DockLabel>{item.label}</DockLabel>
               </DockItem>
             ))}
+
+            {/* Separator and Mascot Toggle */}
+            {onToggleMascot && (
+              <>
+                <div className="w-px h-8 bg-white/10 mx-2 self-center" />
+                <DockItem
+                  onClick={onToggleMascot}
+                  mouseX={mouseX}
+                  spring={spring}
+                  distance={distance}
+                  magnification={magnification}
+                  baseItemSize={baseItemSize}
+                >
+                  <DockIcon>
+                    {mascotType === 'drone' ? <Bot size={24} /> : <Plane size={24} />}
+                  </DockIcon>
+                  <DockLabel>
+                    {mascotType === 'drone' ? 'Switch to Robot' : 'Switch to Drone'}
+                  </DockLabel>
+                </DockItem>
+              </>
+            )}
           </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
   );
 }
-
