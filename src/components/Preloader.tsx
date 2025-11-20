@@ -1,7 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import './Preloader.css';
 
 const Preloader = () => {
+  const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
   const [isFading, setIsFading] = useState(false);
   const startTimeRef = useRef(Date.now());
@@ -9,6 +11,8 @@ const Preloader = () => {
   const minDisplayTime = 2000; // 2 seconds minimum
 
   useEffect(() => {
+    if (isMobile) return;
+
     const handlePageLoad = () => {
       pageLoadedRef.current = true;
       const elapsed = Date.now() - startTimeRef.current;
@@ -41,9 +45,9 @@ const Preloader = () => {
         clearTimeout(fallbackTimeout);
       };
     }
-  }, []);
+  }, [isMobile]);
 
-  if (!isLoading) return null;
+  if (isMobile || !isLoading) return null;
 
   return (
     <div className={`preloader-wrapper ${isFading ? 'fade-out' : 'active'}`}>

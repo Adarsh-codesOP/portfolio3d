@@ -23,7 +23,7 @@ export function RobotMascot({ targetPosition, mousePosition, currentSection = 'h
     // Color schemes for different sections (Same as Drone)
     const sectionColors = useMemo(() => {
         const colors: Record<string, { main: string; accent: string; glow: string; led: string }> = {
-            hero: { main: '#1a1a2e', accent: '#a855f7', glow: '#a855f7', led: '#ec4899' },
+            hero: { main: '#064e3b', accent: '#10b981', glow: '#10b981', led: '#34d399' }, // Green for Hero
             about: { main: '#0f172a', accent: '#3b82f6', glow: '#3b82f6', led: '#60a5fa' },
             skills: { main: '#064e3b', accent: '#10b981', glow: '#10b981', led: '#34d399' },
             highlights: { main: '#451a03', accent: '#f59e0b', glow: '#f59e0b', led: '#fbbf24' },
@@ -68,14 +68,29 @@ export function RobotMascot({ targetPosition, mousePosition, currentSection = 'h
 
     // Change animation based on section
     useEffect(() => {
-        if (currentSection === 'skills' || currentSection === 'projects') {
-            setAnimationState('Walking');
-        } else if (currentSection === 'highlights') {
-            setAnimationState('Dance');
-        } else if (currentSection === 'about') {
-            setAnimationState('Running');
-        } else {
-            setAnimationState('Idle');
+        // Available animations: 'Dance', 'Death', 'Idle', 'Jump', 'No', 'Punch', 'Running', 'Sitting', 'Standing', 'ThumbsUp', 'Walking', 'Wave', 'Yes'
+
+        switch (currentSection) {
+            case 'hero':
+                setAnimationState('Idle');
+                break;
+            case 'about':
+                setAnimationState('Wave');
+                break;
+            case 'skills':
+                setAnimationState('Jump');
+                break;
+            case 'highlights':
+                setAnimationState('Dance');
+                break;
+            case 'projects':
+                setAnimationState('Walking');
+                break;
+            case 'publications':
+                setAnimationState('ThumbsUp');
+                break;
+            default:
+                setAnimationState('Idle');
         }
     }, [currentSection]);
 

@@ -16,6 +16,7 @@ import { GridScan } from '@/components/GridScan';
 import Dock from '@/components/Dock';
 import { Home, User, Briefcase, FileText, Mail, Github, Linkedin } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { ContactForm } from '@/components/ContactForm';
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -27,6 +28,7 @@ const Index = () => {
     section: 'hero',
   });
   const [mascotType, setMascotType] = useState<'drone' | 'robot'>('drone');
+  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
 
   // Track mouse for eye movement (only on desktop)
   useEffect(() => {
@@ -75,7 +77,7 @@ const Index = () => {
     {
       icon: <Mail size={18} />,
       label: 'Contact',
-      onClick: () => window.open('mailto:adarshas107@gmail.com')
+      onClick: () => setIsContactFormOpen(true)
     },
     {
       icon: <Github size={18} />,
@@ -98,27 +100,31 @@ const Index = () => {
             <GridScan
               sensitivity={0.3}
               lineThickness={0.8}
-              linesColor={mascotType === 'drone' ? "#392e4e" : "#2e4e4e"}
+              linesColor={mascotType === 'drone' ? "#6a0dad" : "#008080"}
               gridScale={0.15}
-              scanColor={mascotType === 'drone' ? "#FF9FFC" : "#9FFCFF"}
+              scanColor={mascotType === 'drone' ? "#ff00ff" : "#00ffcc"}
               scanOpacity={0.3}
               enablePost={false}
               bloomIntensity={0}
               chromaticAberration={0}
               noiseIntensity={0.005}
+              className=""
+              style={{}}
             />
           ) : (
             <GridScan
               sensitivity={0.55}
               lineThickness={1}
-              linesColor={mascotType === 'drone' ? "#392e4e" : "#2e4e4e"}
+              linesColor={mascotType === 'drone' ? "#6a0dad" : "#008080"}
               gridScale={0.1}
-              scanColor={mascotType === 'drone' ? "#FF9FFC" : "#9FFCFF"}
+              scanColor={mascotType === 'drone' ? "#ff00ff" : "#00ffcc"}
               scanOpacity={0.4}
               enablePost
-              bloomIntensity={0.6}
+              bloomIntensity={0.8}
               chromaticAberration={0.002}
               noiseIntensity={0.01}
+              className=""
+              style={{}}
             />
           )}
         </div>
@@ -176,7 +182,7 @@ const Index = () => {
           <Skills />
           <Highlights />
           <Projects />
-          <Publications />
+          <Publications openContact={() => setIsContactFormOpen(true)} />
           <Footer />
         </div>
 
@@ -190,6 +196,9 @@ const Index = () => {
             />
           </div>
         </div>
+
+        {/* Contact Form Modal */}
+        <ContactForm isOpen={isContactFormOpen} onClose={() => setIsContactFormOpen(false)} />
       </div>
     </SmoothScroll>
   );

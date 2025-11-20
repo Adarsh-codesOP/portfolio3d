@@ -75,6 +75,8 @@ const SplitText = ({
                 if (!targets) targets = self.chars || self.words || self.lines;
             };
 
+            if (!window.SplitText) return;
+
             const splitInstance = new window.SplitText(el, {
                 type: splitType,
                 smartWrap: true,
@@ -145,8 +147,8 @@ const SplitText = ({
     );
 
     const renderTag = () => {
-        const style = {
-            textAlign,
+        const style: React.CSSProperties = {
+            textAlign: textAlign as any,
             overflow: 'hidden',
             display: 'inline-block',
             whiteSpace: 'normal',
@@ -154,6 +156,16 @@ const SplitText = ({
             willChange: 'transform, opacity'
         };
         const classes = `split-parent ${className}`;
+
+        // Safety check: if SplitText is not loaded, just render the text without animation
+        if (typeof window !== 'undefined' && !window.SplitText) {
+            return (
+                <div className={className} style={{ textAlign: textAlign as any }}>
+                    {text}
+                </div>
+            );
+        }
+
         switch (tag) {
             case 'h1':
                 return (

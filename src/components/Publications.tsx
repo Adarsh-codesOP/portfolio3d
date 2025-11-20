@@ -1,15 +1,17 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, ArrowRight } from 'lucide-react';
-import { ContactForm } from './ContactForm';
 
-export function Publications() {
+interface PublicationsProps {
+  openContact: () => void;
+}
+
+export function Publications({ openContact }: PublicationsProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
-  const [isContactFormOpen, setIsContactFormOpen] = useState(false);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -94,7 +96,7 @@ export function Publications() {
                   <Button
                     size="lg"
                     className="group bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 glow-primary"
-                    onClick={() => setIsContactFormOpen(true)}
+                    onClick={openContact}
                   >
                     Get In Touch
                     <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -105,9 +107,6 @@ export function Publications() {
           </div>
         </motion.div>
       </div>
-
-      {/* Contact Form Modal */}
-      <ContactForm isOpen={isContactFormOpen} onClose={() => setIsContactFormOpen(false)} />
     </section>
   );
 }
