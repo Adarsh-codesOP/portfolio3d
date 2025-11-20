@@ -3,13 +3,12 @@
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { Children, cloneElement, useEffect, useMemo, useRef, useState } from 'react';
 import { Bot, Plane } from 'lucide-react';
-import './Dock.css';
 
 interface DockItemProps {
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
-  mouseX: any; // MotionValue<number> but using any to avoid complex generic issues
+  mouseX: any;
   spring: any;
   distance: number;
   magnification: number;
@@ -43,7 +42,7 @@ function DockItem({ children, className = '', onClick, mouseX, spring, distance,
       onFocus={() => isHovered.set(1)}
       onBlur={() => isHovered.set(0)}
       onClick={onClick}
-      className={`dock-item ${className}`}
+      className={`relative inline-flex items-center justify-center rounded-full bg-[#060010]/80 backdrop-blur-md border-neutral-700/50 border shadow-lg cursor-pointer ${className}`}
       tabIndex={0}
       role="button"
       aria-haspopup="true"
@@ -69,13 +68,12 @@ function DockLabel({ children, className = '', ...rest }: { children: React.Reac
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ opacity: 0, y: 0 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: -10 }}
-          exit={{ opacity: 0, y: 0 }}
+          exit={{ opacity: 0, y: 5 }}
           transition={{ duration: 0.2 }}
-          className={`dock-label ${className}`}
+          className={`${className} absolute -top-8 left-1/2 -translate-x-1/2 w-fit whitespace-pre rounded-md border border-neutral-700 bg-[#060010] px-2 py-1 text-xs text-white shadow-xl z-50`}
           role="tooltip"
-          style={{ x: '-50%' }}
         >
           {children}
         </motion.div>
@@ -85,7 +83,7 @@ function DockLabel({ children, className = '', ...rest }: { children: React.Reac
 }
 
 function DockIcon({ children, className = '' }: { children: React.ReactNode, className?: string }) {
-  return <div className={`dock-icon ${className}`}>{children}</div>;
+  return <div className={`flex items-center justify-center ${className}`}>{children}</div>;
 }
 
 export interface DockItemData {
@@ -111,11 +109,11 @@ interface DockProps {
 export default function Dock({
   items,
   className = '',
-  spring = { mass: 0.05, stiffness: 400, damping: 25 },
+  spring = { mass: 0.1, stiffness: 150, damping: 12 },
   magnification = 70,
   distance = 200,
   panelHeight = 68,
-  dockHeight = 256,
+  dockHeight = 128,
   baseItemSize = 50,
   mascotType,
   onToggleMascot,
@@ -157,7 +155,7 @@ export default function Dock({
             mass: 0.5
           }}
           style={{ height, scrollbarWidth: 'none' }}
-          className="dock-outer"
+          className="mx-2 flex max-w-full items-center justify-center pointer-events-none"
         >
           <motion.div
             onMouseMove={({ pageX }) => {
@@ -168,7 +166,7 @@ export default function Dock({
               isHovered.set(0);
               mouseX.set(Infinity);
             }}
-            className={`dock-panel ${className}`}
+            className={`${className} pointer-events-auto flex items-end w-fit gap-4 rounded-2xl border-neutral-700/50 border bg-[#060010]/50 backdrop-blur-lg pb-2 px-4 shadow-2xl`}
             style={{ height: panelHeight }}
             role="toolbar"
             aria-label="Application dock"
@@ -192,7 +190,7 @@ export default function Dock({
             {/* Mascot Toggle */}
             {onToggleMascot && (
               <>
-                <div className="w-px h-8 bg-white/10 mx-1" />
+                <div className="w-px h-8 bg-white/10 mx-1 self-end mb-2" />
                 <DockItem
                   onClick={onToggleMascot}
                   mouseX={mouseX}
@@ -202,7 +200,7 @@ export default function Dock({
                   baseItemSize={baseItemSize}
                 >
                   <DockIcon>
-                    {mascotType === 'drone' ? <Bot size={18} /> : <Plane size={18} />}
+                    {mascotType === 'drone' ? <Bot size={20} /> : <Plane size={20} />}
                   </DockIcon>
                   <DockLabel>
                     {mascotType === 'drone' ? 'Switch to Robot' : 'Switch to Drone'}

@@ -6,7 +6,11 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import SplitText from '@/components/SplitText';
 import { usePerformance } from '@/hooks/usePerformance';
 
-export function Hero() {
+interface HeroProps {
+  openContact?: () => void;
+}
+
+export function Hero({ openContact }: HeroProps = {}) {
   const isMobile = useIsMobile();
   const { minimalFX } = usePerformance();
   const containerRef = useRef<HTMLElement>(null);
@@ -127,12 +131,12 @@ export function Hero() {
             >
               <Linkedin className="w-6 h-6" />
             </a>
-            <a
-              href="mailto:adarshas107@gmail.com"
-              className="p-3 glass rounded-full hover:bg-accent/20 transition-all"
+            <button
+              onClick={openContact}
+              className="p-3 glass rounded-full hover:bg-accent/20 transition-all cursor-pointer"
             >
               <Mail className="w-6 h-6" />
-            </a>
+            </button>
           </motion.div>
         </div>
       </motion.div>
