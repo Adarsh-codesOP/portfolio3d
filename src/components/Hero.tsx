@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Github, Linkedin, Mail, Download } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import SplitText from '@/components/SplitText';
 
 export function Hero() {
   const isMobile = useIsMobile();
@@ -53,29 +54,20 @@ export function Hero() {
             </span>
           </motion.div>
 
-          <motion.h1
-            variants={itemVariants}
-            className="text-6xl md:text-8xl font-display font-bold mb-6 leading-[1.1] tracking-[-0.03em]"
-          >
-            <span className="text-gradient inline-flex overflow-hidden">
-              {Array.from("ADARSH A S").map((char, index) => (
-                <motion.span
-                  key={index}
-                  initial={{ y: 100, opacity: 0, rotateX: -90 }}
-                  animate={{ y: 0, opacity: 1, rotateX: 0 }}
-                  transition={{
-                    duration: 0.6,
-                    ease: [0.2, 0.65, 0.3, 0.9],
-                    delay: 0.2 + index * 0.05,
-                  }}
-                  className="inline-block"
-                  style={{ transformOrigin: 'bottom' }}
-                >
-                  {char === " " ? "\u00A0" : char}
-                </motion.span>
-              ))}
-            </span>
-          </motion.h1>
+          <SplitText
+            text="ADARSH A S"
+            className="text-6xl md:text-8xl font-display font-bold mb-6 text-gradient"
+            delay={50}
+            duration={0.6}
+            ease="power3.out"
+            splitType="chars"
+            from={{ opacity: 0, y: 40, rotateX: -90 }}
+            to={{ opacity: 1, y: 0, rotateX: 0 }}
+            threshold={0.1}
+            rootMargin="-100px"
+            textAlign="left"
+            tag="h1"
+          />
 
           <motion.p
             variants={itemVariants}
