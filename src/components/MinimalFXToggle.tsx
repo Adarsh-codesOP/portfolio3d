@@ -2,12 +2,17 @@ import { usePerformance } from '@/hooks/usePerformance';
 import { Zap, ZapOff } from 'lucide-react';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useState } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export const MinimalFXToggle = () => {
     const { minimalFX, toggleMinimalFX } = usePerformance();
     const [isVisible, setIsVisible] = useState(true);
     const [isHovered, setIsHovered] = useState(false);
     const { scrollY } = useScroll();
+    const isMobile = useIsMobile();
+
+    // Don't render on mobile
+    if (isMobile) return null;
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         // Show if at top (within 100px) or if previously hidden and now scrolling up (optional, but user asked for top/hover)

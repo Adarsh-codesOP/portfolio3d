@@ -131,9 +131,9 @@ const IndexContent = () => {
             <GridScan
               sensitivity={0.2} // Lower sensitivity
               lineThickness={0.5} // Thinner lines
-              linesColor={mascotType === 'drone' ? "#6a0dad" : "#008080"}
+              linesColor={mascotType === 'drone' ? "#6a0dad" : "#6b8003"}
               gridScale={0.2} // Larger grid (fewer lines)
-              scanColor={mascotType === 'drone' ? "#ff00ff" : "#00ffcc"}
+              scanColor={mascotType === 'drone' ? "#ff00ff" : "#8ba605"}
               scanOpacity={0.2} // Lower opacity
               enablePost={false} // No post-processing
               bloomIntensity={0}
@@ -146,9 +146,9 @@ const IndexContent = () => {
             <GridScan
               sensitivity={0.55}
               lineThickness={1}
-              linesColor={mascotType === 'drone' ? "#6a0dad" : "#008080"}
+              linesColor={mascotType === 'drone' ? "#6a0dad" : "#6b8003"}
               gridScale={0.1}
-              scanColor={mascotType === 'drone' ? "#ff00ff" : "#00ffcc"}
+              scanColor={mascotType === 'drone' ? "#ff00ff" : "#8ba605"}
               scanOpacity={0.4}
               enablePost
               bloomIntensity={0.8}
@@ -208,13 +208,13 @@ const IndexContent = () => {
 
         {/* Content */}
         <div className="relative z-40">
-          <Hero />
+          <Hero openContact={() => setIsContactFormOpen(true)} />
           <About />
           <Skills />
           <Highlights />
           <Projects />
           <Publications openContact={() => setIsContactFormOpen(true)} />
-          <Footer />
+          <Footer openContact={() => setIsContactFormOpen(true)} />
         </div>
 
         {/* Dock Navigation */}
