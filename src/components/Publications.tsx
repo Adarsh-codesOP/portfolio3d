@@ -5,7 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, ArrowRight } from 'lucide-react';
 
-export function Publications() {
+interface PublicationsProps {
+  openContact: () => void;
+}
+
+export function Publications({ openContact }: PublicationsProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
@@ -36,9 +40,9 @@ export function Publications() {
           initial="hidden"
           animate={isInView ? 'visible' : 'hidden'}
         >
-          <motion.h2 
+          <motion.h2
             variants={itemVariants}
-            className="text-5xl md:text-6xl font-black mb-16 text-gradient"
+            className="text-5xl md:text-6xl font-display font-bold mb-16 text-gradient tracking-tight"
           >
             Publications
           </motion.h2>
@@ -75,24 +79,24 @@ export function Publications() {
             </motion.div>
 
             {/* CTA */}
-            <motion.div 
+            <motion.div
               variants={itemVariants}
               className="relative"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-secondary opacity-20 blur-3xl" />
               <Card className="glass relative border-2 border-primary/50">
                 <CardContent className="p-8 text-center">
-                  <h3 className="text-3xl font-black mb-4 text-gradient">
+                  <h3 className="text-3xl font-display font-bold mb-4 text-gradient">
                     Let's Build Something Amazing
                   </h3>
                   <p className="text-muted-foreground mb-6 leading-relaxed">
-                    Interested in collaborating on innovative projects or discussing new opportunities? 
+                    Interested in collaborating on innovative projects or discussing new opportunities?
                     I'm always open to connecting with fellow developers and tech enthusiasts.
                   </p>
-                  <Button 
+                  <Button
                     size="lg"
                     className="group bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 glow-primary"
-                    onClick={() => window.open('mailto:adarshas107@gmail.com')}
+                    onClick={openContact}
                   >
                     Get In Touch
                     <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />

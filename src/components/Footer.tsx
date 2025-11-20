@@ -6,8 +6,8 @@ export function Footer() {
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div>
-            <h3 className="text-2xl font-black text-gradient mb-2">Adarsh A S</h3>
-            <p className="text-sm text-muted-foreground">
+            <h3 className="text-2xl font-display font-bold text-gradient mb-2">Adarsh A S</h3>
+            <p className="text-sm text-muted-foreground font-sans">
               AI Engineer • Software Developer
             </p>
           </div>

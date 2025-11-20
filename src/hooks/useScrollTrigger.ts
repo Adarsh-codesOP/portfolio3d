@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -11,22 +11,43 @@ export interface MascotPosition {
 }
 
 export const useMascotScrollTrigger = (
-  onPositionChange: (position: MascotPosition) => void
+  onPositionChange: (position: MascotPosition & { section?: string }) => void,
+  minimalFX: boolean = false,
+  mascotType: 'drone' | 'robot' = 'drone'
 ) => {
   useEffect(() => {
-    // Define mascot positions for each section
-    const sections = [
-      { id: 'hero', position: [2, 0, 0], rotation: [0, 0, 0], scale: 1.2 },
-      { id: 'about', position: [-2.5, -0.5, 0], rotation: [0, 0.3, 0], scale: 1 },
-      { id: 'skills', position: [2.5, 0.8, 0], rotation: [0, -0.3, 0], scale: 0.9 },
-      { id: 'highlights', position: [-2, -0.3, 0], rotation: [0, 0, 0.2], scale: 1 },
-      { id: 'projects', position: [0, 1.5, 0], rotation: [0, 0, 0], scale: 1.1 },
-      { id: 'publications', position: [1.5, 0, 0], rotation: [0, 0.2, 0], scale: 0.95 },
+    if (minimalFX) {
+      // Kill all existing triggers if switching to minimal mode
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      return;
+    }
+
+    // Drone Configuration
+    const droneSections = [
+      { id: 'hero', position: [2.0, 0, 0], rotation: [0, -0.3, 0], scale: 1.2 }, // Side view, bigger
+      { id: 'about', position: [-2.0, -0.5, 1], rotation: [0.1, 0.3, 0], scale: 1.0 }, // Slight turn
+      { id: 'skills', position: [0, 0, 0], rotation: [1.57, 0, 0], scale: 1.3 }, // Top facing camera, front pointing down
+      { id: 'highlights', position: [-1.5, 0, 0], rotation: [0, 0.3, -0.1], scale: 1.0 }, // Other side
+      { id: 'projects', position: [1.5, 0.5, 1], rotation: [-0.1, -0.4, 0], scale: 1.1 }, // Slight high angle
+      { id: 'publications', position: [0, -0.2, 2], rotation: [0, 0, 0], scale: 1.2 }, // Front view
     ];
 
-    sections.forEach((section, index) => {
-      const nextSection = sections[index + 1];
-      
+    // Robot Configuration (Normal positions)
+    const robotSections = [
+      { id: 'hero', position: [2.0, -1, 0], rotation: [0, -0.5, 0], scale: 1.3 },
+      { id: 'about', position: [-2.0, -1, 1], rotation: [0, 0.5, 0], scale: 1.3 },
+      { id: 'skills', position: [1.5, -1, 0], rotation: [0, -0.2, 0], scale: 1.3 }, // Normal standing
+      { id: 'highlights', position: [-1.5, -1, 0], rotation: [0, 0.5, 0], scale: 1.3 },
+      { id: 'projects', position: [1.5, -1, 1], rotation: [0, -0.5, 0], scale: 1.3 },
+      { id: 'publications', position: [0, -1, 2], rotation: [0, 0, 0], scale: 1.3 },
+    ];
+
+    const sections = mascotType === 'drone' ? droneSections : robotSections;
+
+    // Kill existing triggers before creating new ones
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+
+    sections.forEach((section) => {
       ScrollTrigger.create({
         trigger: `#${section.id}`,
         start: 'top center',
@@ -36,6 +57,7 @@ export const useMascotScrollTrigger = (
             position: section.position as [number, number, number],
             rotation: section.rotation as [number, number, number],
             scale: section.scale,
+            section: section.id,
           });
         },
         onEnterBack: () => {
@@ -43,20 +65,45 @@ export const useMascotScrollTrigger = (
             position: section.position as [number, number, number],
             rotation: section.rotation as [number, number, number],
             scale: section.scale,
+            section: section.id,
           });
         },
       });
     });
 
+    // Add a final trigger for the footer to center the drone
+    ScrollTrigger.create({
+      trigger: 'footer',
+      start: 'top bottom',
+      onEnter: () => {
+        onPositionChange({
+          position: [0, 0, 0],
+          rotation: [0, 0, 0],
+          scale: 1.0,
+          section: 'footer',
+        });
+      },
+      onLeaveBack: () => {
+        // Return to publications position when leaving footer upwards
+        const lastSection = sections[sections.length - 1];
+        onPositionChange({
+          position: lastSection.position as [number, number, number],
+          rotation: lastSection.rotation as [number, number, number],
+          scale: lastSection.scale,
+          section: lastSection.id,
+        });
+      }
+    });
+
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, [onPositionChange]);
+  }, [onPositionChange, minimalFX, mascotType]);
 };
 
-export const useParallax = (ref: React.RefObject<HTMLElement>, speed: number = 0.5) => {
+export const useParallax = (ref: React.RefObject<HTMLElement>, speed: number = 0.5, minimalFX: boolean = false) => {
   useEffect(() => {
-    if (!ref.current) return;
+    if (!ref.current || minimalFX) return;
 
     const element = ref.current;
 
@@ -76,5 +123,5 @@ export const useParallax = (ref: React.RefObject<HTMLElement>, speed: number = 0
         if (trigger.vars.trigger === element) trigger.kill();
       });
     };
-  }, [ref, speed]);
+  }, [ref, speed, minimalFX]);
 };
