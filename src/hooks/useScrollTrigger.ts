@@ -12,7 +12,8 @@ export interface MascotPosition {
 
 export const useMascotScrollTrigger = (
   onPositionChange: (position: MascotPosition & { section?: string }) => void,
-  minimalFX: boolean = false
+  minimalFX: boolean = false,
+  mascotType: 'drone' | 'robot' = 'drone'
 ) => {
   useEffect(() => {
     if (minimalFX) {
@@ -21,15 +22,30 @@ export const useMascotScrollTrigger = (
       return;
     }
 
-    // Define mascot positions for each section - unique angles
-    const sections = [
-      { id: 'hero', position: [2.0, 0, 0], rotation: [0, -0.3, 0], scale: 0.8 }, // Side view, smaller
-      { id: 'about', position: [-2.0, -0.5, 1], rotation: [0.1, 0.3, 0], scale: 0.7 }, // Slight turn
-      { id: 'skills', position: [1.5, 0, 0], rotation: [0, -0.3, 0.1], scale: 0.7 }, // Upright, slight tilt
-      { id: 'highlights', position: [-1.5, 0, 0], rotation: [0, 0.3, -0.1], scale: 0.7 }, // Other side
-      { id: 'projects', position: [1.5, 0.5, 1], rotation: [-0.1, -0.4, 0], scale: 0.75 }, // Slight high angle
-      { id: 'publications', position: [0, -0.2, 2], rotation: [0, 0, 0], scale: 0.8 }, // Front view
+    // Drone Configuration
+    const droneSections = [
+      { id: 'hero', position: [2.0, 0, 0], rotation: [0, -0.3, 0], scale: 1.2 }, // Side view, bigger
+      { id: 'about', position: [-2.0, -0.5, 1], rotation: [0.1, 0.3, 0], scale: 1.0 }, // Slight turn
+      { id: 'skills', position: [0, 0, 0], rotation: [1.57, 0, 0], scale: 1.3 }, // Top facing camera, front pointing down
+      { id: 'highlights', position: [-1.5, 0, 0], rotation: [0, 0.3, -0.1], scale: 1.0 }, // Other side
+      { id: 'projects', position: [1.5, 0.5, 1], rotation: [-0.1, -0.4, 0], scale: 1.1 }, // Slight high angle
+      { id: 'publications', position: [0, -0.2, 2], rotation: [0, 0, 0], scale: 1.2 }, // Front view
     ];
+
+    // Robot Configuration (Normal positions)
+    const robotSections = [
+      { id: 'hero', position: [2.0, -1, 0], rotation: [0, -0.5, 0], scale: 1.3 },
+      { id: 'about', position: [-2.0, -1, 1], rotation: [0, 0.5, 0], scale: 1.3 },
+      { id: 'skills', position: [1.5, -1, 0], rotation: [0, -0.2, 0], scale: 1.3 }, // Normal standing
+      { id: 'highlights', position: [-1.5, -1, 0], rotation: [0, 0.5, 0], scale: 1.3 },
+      { id: 'projects', position: [1.5, -1, 1], rotation: [0, -0.5, 0], scale: 1.3 },
+      { id: 'publications', position: [0, -1, 2], rotation: [0, 0, 0], scale: 1.3 },
+    ];
+
+    const sections = mascotType === 'drone' ? droneSections : robotSections;
+
+    // Kill existing triggers before creating new ones
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 
     sections.forEach((section) => {
       ScrollTrigger.create({
@@ -82,7 +98,7 @@ export const useMascotScrollTrigger = (
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, [onPositionChange, minimalFX]);
+  }, [onPositionChange, minimalFX, mascotType]);
 };
 
 export const useParallax = (ref: React.RefObject<HTMLElement>, speed: number = 0.5, minimalFX: boolean = false) => {

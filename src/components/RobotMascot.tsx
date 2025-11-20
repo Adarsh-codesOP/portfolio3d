@@ -110,7 +110,7 @@ export function RobotMascot({ targetPosition, mousePosition, currentSection = 'h
 
         // Scale interpolation
         // Reduced scale multiplier to 0.5 for smaller size
-        const targetScale = targetPosition.scale * 0.6;
+        const targetScale = targetPosition.scale * 0.42;
         group.current.scale.setScalar(THREE.MathUtils.lerp(group.current.scale.x, targetScale, 0.05));
     });
 

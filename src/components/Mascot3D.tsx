@@ -32,29 +32,72 @@ export function Mascot3D({ targetPosition, mousePosition, currentSection = 'hero
   useFrame((state) => {
     if (!groupRef.current || !bodyRef.current) return;
 
-    // 1. Floating animation (Mechanical hover)
+    // 1. Procedural Animations based on Section
     floatOffset.current += 0.02;
-    const floatY = Math.sin(floatOffset.current) * 0.1;
+    const time = state.clock.getElapsedTime();
+
+    let animPosOffset = new THREE.Vector3(0, 0, 0);
+    let animRotOffset = new THREE.Vector3(0, 0, 0);
+
+    switch (currentSection) {
+      case 'hero':
+        // Idle Hover (Standard)
+        animPosOffset.y = Math.sin(floatOffset.current) * 0.1;
+        break;
+      case 'about':
+        // Scan (Figure-8 movement)
+        animPosOffset.x = Math.sin(time * 1.5) * 0.3;
+        animPosOffset.y = Math.cos(time * 3) * 0.1;
+        animRotOffset.y = Math.sin(time * 1.5) * 0.2; // Look left/right while moving
+        break;
+      case 'skills':
+        // Analyze (Jitter/Twitch + Rotation)
+        animPosOffset.y = Math.sin(time * 4) * 0.05;
+        animRotOffset.z = Math.sin(time * 2) * 0.1; // Tilt
+        animRotOffset.y = Math.sin(time * 0.5) * 0.3; // Slow scan
+        break;
+      case 'highlights':
+        // Orbit/Search (Circular motion)
+        animPosOffset.x = Math.cos(time) * 0.2;
+        animPosOffset.z = Math.sin(time) * 0.2;
+        animRotOffset.z = Math.cos(time) * 0.1; // Banking
+        break;
+      case 'projects':
+        // Inspect (Forward/Back + Precision)
+        animPosOffset.z = Math.sin(time * 0.8) * 0.4; // Move closer/further
+        animPosOffset.y = Math.cos(time * 1.6) * 0.05;
+        break;
+      case 'publications':
+        // Bounce/Excited
+        animPosOffset.y = Math.abs(Math.sin(time * 3)) * 0.2;
+        animRotOffset.x = Math.sin(time * 6) * 0.05; // Nodding
+        break;
+      default:
+        animPosOffset.y = Math.sin(floatOffset.current) * 0.1;
+    }
 
     // 2. Smooth position interpolation
-    groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetPosition.position[0], 0.05);
-    groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetPosition.position[1] + floatY, 0.05);
-    groupRef.current.position.z = THREE.MathUtils.lerp(groupRef.current.position.z, targetPosition.position[2], 0.05);
+    // Apply animation offsets to the target position
+    groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetPosition.position[0] + animPosOffset.x, 0.05);
+    groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetPosition.position[1] + animPosOffset.y, 0.05);
+    groupRef.current.position.z = THREE.MathUtils.lerp(groupRef.current.position.z, targetPosition.position[2] + animPosOffset.z, 0.05);
 
-    // 3. Drone Body Tilt based on movement/mouse
+    // 3. Drone Body Tilt based on movement/mouse + Animation Rotation
     const tiltX = -mousePosition.y * 0.2; // Tilt forward/back
     const tiltZ = mousePosition.x * 0.2;  // Tilt left/right
 
-    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetPosition.rotation[0] + tiltX, 0.05);
-    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetPosition.rotation[1], 0.05);
-    groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetPosition.rotation[2] + tiltZ, 0.05);
+    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetPosition.rotation[0] + tiltX + animRotOffset.x, 0.05);
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetPosition.rotation[1] + animRotOffset.y, 0.05);
+    groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, targetPosition.rotation[2] + tiltZ + animRotOffset.z, 0.05);
 
     // 4. Rotor Animation
     rotorsRef.current.forEach((rotor, i) => {
       if (rotor) {
         // Spin direction alternates for realism
         const dir = i % 2 === 0 ? 1 : -1;
-        rotor.rotation.y += 0.3 * dir;
+        // Spin speed varies slightly by section for effect
+        const speedMult = currentSection === 'highlights' ? 1.5 : 1.0;
+        rotor.rotation.y += 0.3 * dir * speedMult;
       }
     });
 

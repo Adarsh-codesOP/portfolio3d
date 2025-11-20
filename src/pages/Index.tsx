@@ -24,14 +24,40 @@ const IndexContent = () => {
   const isMobile = useIsMobile();
   const { minimalFX } = usePerformance();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mascotType, setMascotType] = useState<'drone' | 'robot'>('drone');
+
+  // Initial state is off-screen based on mascot type
   const [mascotPosition, setMascotPosition] = useState<MascotPosition & { section?: string }>({
-    position: [2.5, 0, 0],
+    position: [0, 10, 0], // Default start position (above for drone)
     rotation: [0, -0.2, 0],
-    scale: 1.3,
+    scale: 1.2,
     section: 'hero',
   });
-  const [mascotType, setMascotType] = useState<'drone' | 'robot'>('drone');
+
   const [isContactFormOpen, setIsContactFormOpen] = useState(false);
+
+  // Entrance Animation
+  useEffect(() => {
+    // Determine start position based on mascot type
+    const startPos: [number, number, number] = mascotType === 'drone'
+      ? [0, 10, 0] // Drone starts above
+      : [10, 0, 0]; // Robot starts from side
+
+    // Set initial off-screen position immediately
+    setMascotPosition(prev => ({ ...prev, position: startPos }));
+
+    // Animate to Hero position after a short delay
+    const timer = setTimeout(() => {
+      setMascotPosition({
+        position: [2.0, 0, 0], // Hero position
+        rotation: [0, -0.3, 0],
+        scale: 1.2,
+        section: 'hero',
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [mascotType]);
 
   // Track mouse for eye movement (only on desktop and when not in minimal mode)
   useEffect(() => {
@@ -54,7 +80,7 @@ const IndexContent = () => {
     }
   }, [isMobile]);
 
-  useMascotScrollTrigger(handlePositionChange, minimalFX);
+  useMascotScrollTrigger(handlePositionChange, minimalFX, mascotType);
 
   const dockItems = [
     {
