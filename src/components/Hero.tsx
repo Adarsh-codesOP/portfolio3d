@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Github, Linkedin, Mail, Download } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import SplitText from '@/components/SplitText';
+import { usePerformance } from '@/hooks/usePerformance';
 
 export function Hero() {
   const isMobile = useIsMobile();
+  const { minimalFX } = usePerformance();
   const containerRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -54,20 +56,30 @@ export function Hero() {
             </span>
           </motion.div>
 
-          <SplitText
-            text="ADARSH A S"
-            className="text-6xl md:text-8xl font-display font-bold mb-6 text-gradient"
-            delay={50}
-            duration={0.6}
-            ease="power3.out"
-            splitType="chars"
-            from={{ opacity: 0, y: 40, rotateX: -90 }}
-            to={{ opacity: 1, y: 0, rotateX: 0 }}
-            threshold={0.1}
-            rootMargin="-100px"
-            textAlign="left"
-            tag="h1"
-          />
+          {/* Conditional rendering for SplitText vs simple H1 based on minimalFX */}
+          {minimalFX ? (
+            <motion.h1
+              variants={itemVariants}
+              className="text-6xl md:text-8xl font-display font-bold mb-6 text-gradient"
+            >
+              ADARSH A S
+            </motion.h1>
+          ) : (
+            <SplitText
+              text="ADARSH A S"
+              className="text-6xl md:text-8xl font-display font-bold mb-6 text-gradient"
+              delay={50}
+              duration={0.6}
+              ease="power3.out"
+              splitType="chars"
+              from={{ opacity: 0, y: 40, rotateX: -90 }}
+              to={{ opacity: 1, y: 0, rotateX: 0 }}
+              threshold={0.1}
+              rootMargin="-100px"
+              textAlign="left"
+              tag="h1"
+            />
+          )}
 
           <motion.p
             variants={itemVariants}

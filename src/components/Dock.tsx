@@ -5,13 +5,24 @@ import { Children, cloneElement, useEffect, useMemo, useRef, useState } from 're
 import { Bot, Plane } from 'lucide-react';
 import './Dock.css';
 
-function DockItem({ children, className = '', onClick, mouseX, spring, distance, magnification, baseItemSize }) {
-  const ref = useRef(null);
+interface DockItemProps {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+  mouseX: any; // MotionValue<number> but using any to avoid complex generic issues
+  spring: any;
+  distance: number;
+  magnification: number;
+  baseItemSize: number;
+}
+
+function DockItem({ children, className = '', onClick, mouseX, spring, distance, magnification, baseItemSize }: DockItemProps) {
+  const ref = useRef<HTMLDivElement>(null);
   const isHovered = useMotionValue(0);
 
-  const mouseDistance = useTransform(mouseX, val => {
+  const mouseDistance = useTransform(mouseX, (val: number) => {
     const rect = ref.current?.getBoundingClientRect() ?? {
-      x: 0 as number,
+      x: 0,
       width: baseItemSize
     };
     return val - rect.x - baseItemSize / 2;
@@ -37,18 +48,18 @@ function DockItem({ children, className = '', onClick, mouseX, spring, distance,
       role="button"
       aria-haspopup="true"
     >
-      {Children.map(children, child => cloneElement(child, { isHovered }))}
+      {Children.map(children, child => cloneElement(child as React.ReactElement, { isHovered }))}
     </motion.div>
   );
 }
 
-function DockLabel({ children, className = '', ...rest }) {
+function DockLabel({ children, className = '', ...rest }: { children: React.ReactNode, className?: string, [key: string]: any }) {
   const { isHovered } = rest;
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (!isHovered) return;
-    const unsubscribe = isHovered.on('change', latest => {
+    const unsubscribe = isHovered.on('change', (latest: number) => {
       setIsVisible(latest === 1);
     });
     return () => unsubscribe();
@@ -73,7 +84,7 @@ function DockLabel({ children, className = '', ...rest }) {
   );
 }
 
-function DockIcon({ children, className = '' }) {
+function DockIcon({ children, className = '' }: { children: React.ReactNode, className?: string }) {
   return <div className={`dock-icon ${className}`}>{children}</div>;
 }
 

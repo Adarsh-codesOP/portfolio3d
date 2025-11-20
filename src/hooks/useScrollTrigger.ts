@@ -11,9 +11,16 @@ export interface MascotPosition {
 }
 
 export const useMascotScrollTrigger = (
-  onPositionChange: (position: MascotPosition & { section?: string }) => void
+  onPositionChange: (position: MascotPosition & { section?: string }) => void,
+  minimalFX: boolean = false
 ) => {
   useEffect(() => {
+    if (minimalFX) {
+      // Kill all existing triggers if switching to minimal mode
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      return;
+    }
+
     // Define mascot positions for each section - unique angles
     const sections = [
       { id: 'hero', position: [2.0, 0, 0], rotation: [0, -0.3, 0], scale: 0.8 }, // Side view, smaller
@@ -75,12 +82,12 @@ export const useMascotScrollTrigger = (
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, [onPositionChange]);
+  }, [onPositionChange, minimalFX]);
 };
 
-export const useParallax = (ref: React.RefObject<HTMLElement>, speed: number = 0.5) => {
+export const useParallax = (ref: React.RefObject<HTMLElement>, speed: number = 0.5, minimalFX: boolean = false) => {
   useEffect(() => {
-    if (!ref.current) return;
+    if (!ref.current || minimalFX) return;
 
     const element = ref.current;
 
@@ -100,5 +107,5 @@ export const useParallax = (ref: React.RefObject<HTMLElement>, speed: number = 0
         if (trigger.vars.trigger === element) trigger.kill();
       });
     };
-  }, [ref, speed]);
+  }, [ref, speed, minimalFX]);
 };

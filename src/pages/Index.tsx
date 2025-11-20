@@ -17,9 +17,12 @@ import Dock from '@/components/Dock';
 import { Home, User, Briefcase, FileText, Mail, Github, Linkedin } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { ContactForm } from '@/components/ContactForm';
+import { PerformanceProvider, usePerformance } from '@/hooks/usePerformance';
+import { MinimalFXToggle } from '@/components/MinimalFXToggle';
 
-const Index = () => {
+const IndexContent = () => {
   const isMobile = useIsMobile();
+  const { minimalFX } = usePerformance();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [mascotPosition, setMascotPosition] = useState<MascotPosition & { section?: string }>({
     position: [2.5, 0, 0],
@@ -30,9 +33,9 @@ const Index = () => {
   const [mascotType, setMascotType] = useState<'drone' | 'robot'>('drone');
   const [isContactFormOpen, setIsContactFormOpen] = useState(false);
 
-  // Track mouse for eye movement (only on desktop)
+  // Track mouse for eye movement (only on desktop and when not in minimal mode)
   useEffect(() => {
-    if (isMobile) return;
+    if (isMobile || minimalFX) return;
 
     const handleMouseMove = (e: MouseEvent) => {
       const x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -42,7 +45,7 @@ const Index = () => {
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [isMobile]);
+  }, [isMobile, minimalFX]);
 
   // GSAP ScrollTrigger for mascot positions (only on desktop)
   const handlePositionChange = useCallback((position: MascotPosition & { section?: string }) => {
@@ -51,7 +54,7 @@ const Index = () => {
     }
   }, [isMobile]);
 
-  useMascotScrollTrigger(handlePositionChange);
+  useMascotScrollTrigger(handlePositionChange, minimalFX);
 
   const dockItems = [
     {
@@ -94,20 +97,22 @@ const Index = () => {
   return (
     <SmoothScroll>
       <div className="min-h-screen bg-background text-foreground relative">
-        {/* GridScan Background - Changes color based on mascot type */}
+        <MinimalFXToggle />
+
+        {/* GridScan Background - Always visible but optimized for Minimal FX */}
         <div className="fixed inset-0 z-0">
-          {isMobile ? (
+          {isMobile || minimalFX ? (
             <GridScan
-              sensitivity={0.3}
-              lineThickness={0.8}
+              sensitivity={0.2} // Lower sensitivity
+              lineThickness={0.5} // Thinner lines
               linesColor={mascotType === 'drone' ? "#6a0dad" : "#008080"}
-              gridScale={0.15}
+              gridScale={0.2} // Larger grid (fewer lines)
               scanColor={mascotType === 'drone' ? "#ff00ff" : "#00ffcc"}
-              scanOpacity={0.3}
-              enablePost={false}
+              scanOpacity={0.2} // Lower opacity
+              enablePost={false} // No post-processing
               bloomIntensity={0}
               chromaticAberration={0}
-              noiseIntensity={0.005}
+              noiseIntensity={0}
               className=""
               style={{}}
             />
@@ -129,8 +134,8 @@ const Index = () => {
           )}
         </div>
 
-        {/* Fixed 3D Canvas with Mascot - Desktop only */}
-        {!isMobile && (
+        {/* Fixed 3D Canvas with Mascot - Desktop only and NOT in Minimal FX mode */}
+        {!isMobile && !minimalFX && (
           <div className="fixed inset-0 z-30 pointer-events-none">
             <Canvas shadows>
               <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={50} />
@@ -201,6 +206,14 @@ const Index = () => {
         <ContactForm isOpen={isContactFormOpen} onClose={() => setIsContactFormOpen(false)} />
       </div>
     </SmoothScroll>
+  );
+};
+
+const Index = () => {
+  return (
+    <PerformanceProvider>
+      <IndexContent />
+    </PerformanceProvider>
   );
 };
 
