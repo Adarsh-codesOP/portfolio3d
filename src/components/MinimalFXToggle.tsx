@@ -11,9 +11,6 @@ export const MinimalFXToggle = () => {
     const { scrollY } = useScroll();
     const isMobile = useIsMobile();
 
-    // Don't render on mobile
-    if (isMobile) return null;
-
     useMotionValueEvent(scrollY, "change", (latest) => {
         // Show if at top (within 100px) or if previously hidden and now scrolling up (optional, but user asked for top/hover)
         // User specific request: "hides ones you start scrolling only visible if you put your cursor over the notch or if you get to top of the page"
@@ -23,6 +20,9 @@ export const MinimalFXToggle = () => {
             setIsVisible(false);
         }
     });
+
+    // Don't render on mobile
+    if (isMobile) return null;
 
     return (
         <div
