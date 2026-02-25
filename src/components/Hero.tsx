@@ -107,7 +107,7 @@ export function Hero({ openContact }: HeroProps = {}) {
               size="lg"
               variant="outline"
               className="glass border-border/50 hover:border-primary/50"
-              onClick={() => window.open('https://fgzehdqzrqgrugmgifem.supabase.co/storage/v1/object/public/resume/Adarsh-Ai-SDE.pdf', '_blank')}
+              onClick={() => window.open('https://drive.google.com/file/d/1R6kK-s6v5lLfJV0y2WWvdo4EdV2WUH1c/view?usp=sharing', '_blank')}
             >
               <Download className="mr-2 w-5 h-5" />
               Download Resume
